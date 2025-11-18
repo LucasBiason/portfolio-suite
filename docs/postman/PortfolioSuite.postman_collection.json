@@ -1,0 +1,96 @@
+{
+  "info": {
+    "name": "Portfolio Suite API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection para testar a API do portfólio"
+  },
+  "item": [
+    {
+      "name": "Auth / Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"lucas.biason@foxcodesoftware.com\",\n  \"password\": \"senha_portfolio\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Perfil público",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/user", "host": ["{{baseUrl}}"], "path": ["api","user"] }
+      }
+    },
+    {
+      "name": "Projetos (público)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api","projects"] }
+      }
+    },
+    {
+      "name": "Projetos (me)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/projects/me", "host": ["{{baseUrl}}"], "path": ["api","projects","me"] }
+      }
+    },
+    {
+      "name": "Criar projeto",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api","projects"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"API de exemplo\",\n  \"description\": \"Descrição breve\",\n  \"technologies\": [\"Node.js\", \"Prisma\"],\n  \"category\": \"api\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Contato público",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/contact/info", "host": ["{{baseUrl}}"], "path": ["api","contact","info"] }
+      }
+    },
+    {
+      "name": "Enviar mensagem",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": { "raw": "{{baseUrl}}/api/contact", "host": ["{{baseUrl}}"], "path": ["api","contact"] },
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Visitante\",\n  \"email\": \"visitante@example.com\",\n  \"message\": \"Mensagem de teste\"\n}" }
+      }
+    },
+    {
+      "name": "Experiências públicas",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/experience", "host": ["{{baseUrl}}"], "path": ["api","experience"] } }
+    },
+    {
+      "name": "Serviços públicos",
+      "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/services", "host": ["{{baseUrl}}"], "path": ["api","services"] } }
+    },
+    {
+      "name": "Admin stats",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/admin/stats", "host": ["{{baseUrl}}"], "path": ["api","admin","stats"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "token", "value": "" }
+  ]
+}

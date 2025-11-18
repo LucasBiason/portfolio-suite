@@ -1,0 +1,33 @@
+# Global ignores
+*node_modules/
+dist/
+*.log
+*.env
+configs/.env
+configs/.env.prod
+configs/.env.*
+deploy/.env
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+.pytest_cache/
+__pycache__/
+*.tgz
+*.zip
+.dockerignore
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/src/generated/
+backend/.env

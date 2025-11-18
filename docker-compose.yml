@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: portfolio-backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./configs/.env
+    depends_on:
+      - database
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: portfolio-frontend
+    ports:
+      - "5173:80"
+    env_file:
+      - ./configs/.env
+    depends_on:
+      - backend
+    networks:
+      - portfolio-net
+    restart: unless-stopped
+
+  database:
+    image: postgres:16-alpine
+    container_name: portfolio-db
+    environment:
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - portfolio-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  portfolio-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+
+

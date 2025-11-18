@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply font-body antialiased;
+  scroll-behavior: auto;
+}
+
+html:has(:target) {
+  scroll-behavior: auto;
+}
+
+body {
+  @apply min-h-screen bg-background text-white;
+}
+
+section[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* Previne auto-focus e scroll automático */
+*:focus {
+  outline: none;
+}
+
+h2:focus,
+h3:focus {
+  outline: none;
+}
+
+a {
+  @apply transition-colors duration-200;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0d10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0047AB;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #002D6B;
+}

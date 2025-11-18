@@ -1,0 +1,116 @@
+import type { Request, Response } from 'express';
+import { ProfileRepository } from '../repositories/ProfileRepository';
+import { ContactRepository } from '../repositories/ContactRepository';
+import { buildAssetUrl } from '../utils/assets';
+import { updateProfileSchema } from '../schemas/profileSchemas';
+import { prisma } from '../config/prisma';
+
+/**
+ * Controls the exposure of public profile and editing panel for the authenticated user.
+ */
+export class ProfileController {
+  private readonly profileRepository = new ProfileRepository();
+  private readonly contactRepository = new ContactRepository();
+
+  /**
+   * Builds the complete profile payload (hero, SEO, sections and footer) from the database.
+   */
+  private async buildProfileResponse(userId: string) {
+    const profile = await this.profileRepository.getByUserId(userId);
+    if (!profile) {
+      throw new Error('Profile not found.');
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    const contacts = await this.contactRepository.listPublicByUser(userId);
+    const socialLinks = contacts
+      .filter((contact) => contact.type === 'social')
+      .map((contact) => ({
+        icon: contact.icon ?? 'bx-link',
+        url: contact.href ?? contact.value,
+        label: contact.title,
+      }));
+
+    return {
+      name: user.displayName,
+      title: profile.title,
+      subtitle: profile.subtitle,
+      bio: profile.bio,
+      highlights: profile.highlights,
+      avatarUrl: buildAssetUrl(profile.avatarUrl),
+      heroBackgroundUrl: buildAssetUrl(profile.heroBackgroundUrl),
+      socialLinks,
+      seo: {
+        title: profile.seoTitle,
+        description: profile.seoDescription,
+      },
+      sections: {
+        projects: {
+          title: profile.sectionProjectsTitle,
+          subtitle: profile.sectionProjectsSubtitle,
+        },
+      },
+      footer: {
+        title: profile.footerTitle ?? user.displayName,
+        description: profile.footerDescription,
+        tagline: profile.footerTagline,
+      },
+    };
+  }
+
+  /**
+   * Returns the profile for the authenticated user.
+   */
+  getProfile = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+    try {
+      const payload = await this.buildProfileResponse(req.userId);
+      return res.json(payload);
+    } catch (error) {
+      return res.status(404).json({ error: (error as Error).message });
+    }
+  };
+
+  /**
+   * Returns only the textual data from the "About" section for the authenticated user.
+   */
+  getAbout = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+    try {
+      const profile = await this.profileRepository.getByUserId(req.userId);
+      if (!profile) {
+        return res.status(404).json({ error: 'Profile not found.' });
+      }
+      return res.json({
+        title: profile.title,
+        subtitle: profile.subtitle,
+        description: profile.bio,
+        description2: profile.sectionProjectsSubtitle,
+        highlights: profile.highlights,
+      });
+    } catch (error) {
+      return res.status(400).json({ error: (error as Error).message });
+    }
+  };
+
+  /**
+   * Updates profile fields belonging to the authenticated user.
+   */
+  updateProfile = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+    const payload = updateProfileSchema.parse(req.body);
+    const profile = await this.profileRepository.update(req.userId, payload);
+    return res.json(profile);
+  };
+}
+

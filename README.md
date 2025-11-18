@@ -142,21 +142,9 @@ A especificação completa está em [`docs/API.md`](docs/API.md) e há uma colle
 - Formulário de contato inspirado no layout Atom, alimentando `/api/contact`
 - Componentes Tailwind 3.x com tipografia `Raleway` e `Open Sans`
 
-## 🧩 Projetos ML Integrados
-- [`ml-spam-classifier-api`](https://github.com/LucasBiason/ml-spam-classifier-api) — Classificação de spam com FastAPI + scikit-learn
-- [`ml-sales-forecasting`](https://github.com/LucasBiason/ml-sales-forecasting) — Previsão de preços de imóveis (API + SPA)
+## 🎯 Demo
 
-## 📦 Deploy
-
-1. Copie o repositório para o servidor Hostinger (`git clone` ou SCP).
-2. Preencha `configs/.env.prod` com as credenciais do ambiente remoto (SMTP, admin, URLs, `ASSET_BASE_URL=https://api.seudominio.com` etc).
-3. Execute `docker compose -f docker-compose.prod.yml up -d --build`.
-4. Configure o proxy reverso (Nginx/Proxy Manager) apontando `lucasbiason.com` para o frontend e `api.lucasbiason.com` para o backend.
-5. Para deploy automatizado use `python deploy/hostinger_deploy.py`, com as variáveis `HOST_HOST`, `USER_HOST` e `PASS_HOST` definidas no arquivo `deploy/.env` (não versionado).
-
-### Seeds
-- O script SQL com os dados iniciais (usuário padrão, projetos, experiências etc.) fica fora do repositório em `/home/lucas-biason/Projetos/Portfólio/scripts-temporarios/portfolio_seed.sql`.
-- Para executar: `psql \"$DATABASE_URL\" -f portfolio_seed.sql` (com a variável `portfolio_email` ajustada para o seu email).
+Acesse o portfólio em produção: **[lucasbiason.com](https://lucasbiason.com)**
 
 ## 🛠️ Makefile
 
@@ -174,4 +162,3 @@ Veja [CHANGELOG.md](CHANGELOG.md).
 
 ## 📄 Licença
 Este projeto está licenciado sob a [MIT License](LICENSE).
-

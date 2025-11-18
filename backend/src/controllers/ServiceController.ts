@@ -31,6 +31,7 @@ export class ServiceController {
     const serviceData: Omit<Service, 'id' | 'userId' | 'createdAt' | 'updatedAt'> = {
       ...payload,
       order: payload.order ?? 0,
+      icon: payload.icon ?? null,
     };
     const service = await this.serviceRepository.create(req.userId, serviceData);
     return res.status(201).json(service);

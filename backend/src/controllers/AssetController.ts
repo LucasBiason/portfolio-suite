@@ -170,6 +170,9 @@ export class AssetController {
         .map(file => {
           const [tag, ...rest] = file.split('-');
           const filename = rest.join('-');
+          if (!req.userId) {
+            throw new Error('User ID is required');
+          }
           const fileUrl = this.getFileUrl(req.userId, tag, filename);
           const fullUrl = buildAssetUrl(fileUrl) || fileUrl;
           return {

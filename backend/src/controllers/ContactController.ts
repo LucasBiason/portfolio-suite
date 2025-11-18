@@ -60,6 +60,9 @@ export class ContactController {
     const contactData: Omit<ContactInfoModel, 'id' | 'userId' | 'createdAt' | 'updatedAt'> = {
       ...payload,
       order: payload.order ?? 0,
+      href: payload.href ?? null,
+      icon: payload.icon ?? null,
+      type: payload.type ?? null,
     };
     const contact = await this.contactRepository.create(req.userId, contactData);
     return res.status(201).json(contact);

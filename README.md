@@ -6,15 +6,17 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Portfólio pessoal fullstack com frontend React e backend Node.js, consumindo dados de projetos reais (ML & APIs) e formulário de contato integrado.**
+> **Portfólio profissional fullstack desenvolvido com React e Node.js, apresentando projetos reais de Machine Learning e APIs em produção, com sistema completo de gerenciamento de conteúdo e formulário de contato integrado.**
 
 ## 🌟 Destaques
 
-- 🧠 **API REST MVC** (controllers + repositories) com Prisma/PostgreSQL e JWT
-- 🎨 **Frontend moderno** em React + Tailwind (layout baseado no template [Atom](https://www.tailawesome.com/resources/atom))
-- 📬 **Formulário de contato** com envio via SMTP + cards configuráveis no banco
-- 👥 **Multiusuário**: cada conta mantém seu próprio portfólio, projetos, experiências e serviços
-- 🐳 **Docker Compose** com frontend, backend, banco e Nginx; variáveis centralizadas em `configs/`
+- 🧠 **API REST completa** com arquitetura MVC (controllers + repositories), Prisma ORM, PostgreSQL e autenticação JWT
+- 🎨 **Frontend moderno e responsivo** em React 18 + TypeScript + TailwindCSS, com design baseado no template [Atom](https://www.tailawesome.com/resources/atom)
+- 📬 **Sistema de contato profissional** com envio de emails via SMTP e cards de informação configuráveis dinamicamente
+- 👥 **Arquitetura multiusuário**: cada conta gerencia seu próprio portfólio, projetos, experiências profissionais e serviços oferecidos
+- 🐳 **Infraestrutura containerizada** com Docker Compose incluindo frontend, backend, PostgreSQL e Nginx reverso proxy
+- 📸 **Galeria de projetos** com suporte a imagens e screenshots dos projetos em destaque
+- 🔒 **Segurança robusta** com JWT, validação de dados via Zod e isolamento de dados por usuário
 
 ## 🏗️ Arquitetura
 

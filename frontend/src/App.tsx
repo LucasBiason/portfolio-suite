@@ -65,9 +65,10 @@ const App = () => {
 
         {!loading && !error && <ProjectsSection projects={projects} />}
 
-        <Suspense fallback={<div className="container py-16 text-center text-grey-20">Carregando...</div>}>
+        {/* Experiência removida temporariamente - já está no LinkedIn e CV */}
+        {/* <Suspense fallback={<div className="container py-16 text-center text-grey-20">Carregando...</div>}>
           <LazyExperienceSection />
-        </Suspense>
+        </Suspense> */}
         <Suspense fallback={<div className="container py-16 text-center text-grey-20">Carregando...</div>}>
           <LazyContactForm />
         </Suspense>

@@ -2,12 +2,36 @@ import type { Experience } from '@prisma/client';
 import type { Request, Response } from 'express';
 import { ExperienceRepository } from '../repositories/ExperienceRepository';
 import { createExperienceSchema, updateExperienceSchema } from '../schemas/experienceSchemas';
+import { prisma } from '../config/prisma';
+import { appEnv } from '../config/env';
 
 /**
  * Controls authenticated endpoints for the experience timeline.
  */
 export class ExperienceController {
   private readonly experienceRepository = new ExperienceRepository();
+
+  /**
+   * Lists experiences publicly (without authentication).
+   * Uses default user email from environment to find user's experiences.
+   */
+  listPublic = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email: appEnv.defaultEmail },
+      });
+
+      if (!user) {
+        return res.json([]);
+      }
+
+      const experiences = await this.experienceRepository.listPublicByUser(user.id);
+      return res.json(experiences);
+    } catch (error: any) {
+      console.error('Error in listPublic:', error?.message || error);
+      return res.json([]);
+    }
+  };
 
   /**
    * Lists experiences for the authenticated user.

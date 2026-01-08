@@ -10,11 +10,19 @@ services:
       - "3001"
     env_file:
       - ./configs/.env.prod
+    environment:
+      - BETTERSTACK_COLLECTOR_SECRET=${BETTERSTACK_COLLECTOR_SECRET}
     depends_on:
       - database
     networks:
       - portfolio-net
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=portfolio-backend"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
       interval: 30s
@@ -26,17 +34,25 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=${VITE_API_URL:-http://api.lucasbiason.com}
-        - VITE_DEFAULT_EMAIL=${PORTFOLIO_DEFAULT_EMAIL}
-        - VITE_DEFAULT_PASSWORD=${PORTFOLIO_DEFAULT_PASSWORD}
+        - VITE_API_URL=
+        - VITE_DEFAULT_EMAIL=lucas.biason@foxcodesoftware.com
+        - VITE_DEFAULT_PASSWORD=Portfolio2025Secure!
     container_name: portfolio-frontend
     expose:
       - "80"
+    environment:
+      - BETTERSTACK_COLLECTOR_SECRET=${BETTERSTACK_COLLECTOR_SECRET}
     depends_on:
       - backend
     networks:
       - portfolio-net
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=portfolio-frontend"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
@@ -59,6 +75,18 @@ services:
     networks:
       - portfolio-net
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=portfolio-nginx"
+    # Add external_links to resolve ML containers
+    extra_hosts:
+      - "ml-sales-api:host-gateway"
+      - "ml-sales-frontend:host-gateway"
+      - "ml-spam-api:host-gateway"
+      - "ml-spam-frontend:host-gateway"
 
   database:
     image: postgres:16-alpine
@@ -71,12 +99,18 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - portfolio-net
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=portfolio-db"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
 
 networks:
   portfolio-net:

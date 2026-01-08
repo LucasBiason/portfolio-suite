@@ -3,12 +3,66 @@ import type { CreateProjectInput } from '../repositories/ProjectRepository';
 import { ProjectRepository } from '../repositories/ProjectRepository';
 import { buildAssetUrl } from '../utils/assets';
 import { createProjectSchema, updateProjectSchema } from '../schemas/projectSchemas';
+import { prisma } from '../config/prisma';
+import { appEnv } from '../config/env';
+// Types are automatically loaded from src/types/express.d.ts
 
 /**
  * Responsible for exposing authenticated endpoints related to portfolio projects.
  */
 export class ProjectController {
   private readonly projectRepository = new ProjectRepository();
+
+  /**
+   * Lists projects publicly (without authentication).
+   * Uses default user email from environment to find user's projects.
+   */
+  listPublic = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      // Find user by default email
+      const user = await prisma.user.findFirst({
+        where: { email: appEnv.defaultEmail },
+      });
+
+      if (!user) {
+        // Return empty array if user doesn't exist (no projects yet)
+        return res.json([]);
+      }
+
+      const featured = req.query.featured === 'true' ? true : req.query.featured === 'false' ? false : undefined;
+      const projects = await this.projectRepository.listPublicByUser(user.id, featured);
+      
+      return res.json(
+        projects.map((project) => {
+          let imageUrl: string | string[] | null = project.imageUrl;
+          
+          // Try to parse as JSON array, fallback to string
+          if (imageUrl) {
+            try {
+              const parsed = JSON.parse(imageUrl);
+              if (Array.isArray(parsed)) {
+                imageUrl = parsed.map((url: string) => buildAssetUrl(url) ?? url);
+              } else {
+                imageUrl = buildAssetUrl(imageUrl as string) ?? null;
+              }
+            } catch {
+              // Not JSON, treat as single image URL
+              imageUrl = buildAssetUrl(imageUrl as string) ?? null;
+            }
+          }
+          
+          return {
+            ...project,
+            imageUrl,
+          };
+        }),
+      );
+    } catch (error: any) {
+      console.error('Error in listPublic:', error?.message || error);
+      // Return empty array on error instead of 500, so frontend can still load
+      return res.json([]);
+    }
+  };
 
   /**
    * Lists projects for the authenticated user.
@@ -21,10 +75,29 @@ export class ProjectController {
 
     const projects = await this.projectRepository.listPublicByUser(req.userId, featured);
     return res.json(
-      projects.map((project) => ({
-        ...project,
-        imageUrl: buildAssetUrl(project.imageUrl),
-      })),
+      projects.map((project) => {
+        let imageUrl: string | string[] | null = project.imageUrl;
+        
+        // Try to parse as JSON array, fallback to string
+        if (imageUrl) {
+          try {
+            const parsed = JSON.parse(imageUrl);
+            if (Array.isArray(parsed)) {
+              imageUrl = parsed.map((url: string) => buildAssetUrl(url) ?? url);
+            } else {
+              imageUrl = buildAssetUrl(imageUrl as string) ?? null;
+            }
+          } catch {
+            // Not JSON, treat as single image URL
+            imageUrl = buildAssetUrl(imageUrl as string) ?? null;
+          }
+        }
+        
+        return {
+          ...project,
+          imageUrl,
+        };
+      }),
     );
   };
 

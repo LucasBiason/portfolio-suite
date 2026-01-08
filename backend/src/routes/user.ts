@@ -5,6 +5,9 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 const router = Router();
 const controller = new ProfileController();
 
-router.get('/', authMiddleware, controller.getProfile);
+// Public route for portfolio display
+router.get('/', controller.getPublicProfile);
+// Protected route for authenticated users
+router.get('/me', authMiddleware, controller.getProfile);
 
 export default router;

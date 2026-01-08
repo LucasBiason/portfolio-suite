@@ -47,11 +47,16 @@ export const Hero = memo(() => {
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-hero-gradient-from to-hero-gradient-to" />
       <div className="container relative z-20 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 py-16 sm:flex-row sm:py-20">
         <div className="flex-shrink-0">
-          <div className="rounded-full border-4 border-accent-soft shadow-2xl">
+          <div className="rounded-full border-4 border-accent-soft shadow-2xl bg-background/20 overflow-hidden">
             <img
-              src={user.avatarUrl}
+              src={user.avatarUrl || '/assets/img/avatar.jpg'}
               alt={user.name}
               className="h-56 w-56 rounded-full object-cover sm:h-64 sm:w-64"
+              onError={(e) => {
+                // Fallback se a imagem não carregar
+                const target = e.target as HTMLImageElement;
+                target.src = '/assets/img/avatar.jpg';
+              }}
             />
           </div>
         </div>

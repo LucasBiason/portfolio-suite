@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import './index.css'
 
-const App = lazy(() => import('./App').then((module) => ({ default: module.default })))
+// Import App directly instead of lazy to avoid mobile loading issues
+import App from './App'
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-secondary flex items-center justify-center">
@@ -14,12 +15,24 @@ const LoadingFallback = () => (
   </div>
 )
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <Suspense fallback={<LoadingFallback />}>
-        <App />
-      </Suspense>
-    </ErrorBoundary>
-  </StrictMode>,
-)
+// Remove loading fallback from HTML when React loads
+const rootElement = document.getElementById('root')
+if (rootElement) {
+  // Clear any loading content
+  const loadingContent = rootElement.querySelector('div[style*="min-height: 100vh"]')
+  if (loadingContent) {
+    rootElement.innerHTML = ''
+  }
+
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <App />
+        </Suspense>
+      </ErrorBoundary>
+    </StrictMode>
+  )
+} else {
+  console.error('Root element not found!')
+}

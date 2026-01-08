@@ -2,12 +2,36 @@ import type { Service } from '@prisma/client';
 import type { Request, Response } from 'express';
 import { ServiceRepository } from '../repositories/ServiceRepository';
 import { createServiceSchema, updateServiceSchema } from '../schemas/serviceSchemas';
+import { prisma } from '../config/prisma';
+import { appEnv } from '../config/env';
 
 /**
  * Manages specialties/services exposed in the portfolio.
  */
 export class ServiceController {
   private readonly serviceRepository = new ServiceRepository();
+
+  /**
+   * Lists services publicly (without authentication).
+   * Uses default user email from environment to find user's services.
+   */
+  listPublic = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email: appEnv.defaultEmail },
+      });
+
+      if (!user) {
+        return res.json([]);
+      }
+
+      const services = await this.serviceRepository.listPublicByUser(user.id);
+      return res.json(services);
+    } catch (error: any) {
+      console.error('Error in listPublic:', error?.message || error);
+      return res.json([]);
+    }
+  };
 
   /**
    * Lists services for the authenticated user.

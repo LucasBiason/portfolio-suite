@@ -5,7 +5,9 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 const router = Router();
 const controller = new ProjectController();
 
-router.get('/', authMiddleware, controller.list);
+// Public route for listing projects (for portfolio display)
+router.get('/', controller.listPublic);
+// Protected routes for CRUD operations
 router.post('/', authMiddleware, controller.create);
 router.put('/:id', authMiddleware, controller.update);
 router.delete('/:id', authMiddleware, controller.delete);

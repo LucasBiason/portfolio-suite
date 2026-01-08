@@ -3,6 +3,7 @@ import type { ContactInfo as ContactInfoModel } from '@prisma/client';
 import { ContactRepository } from '../repositories/ContactRepository';
 import { createContactSchema, updateContactSchema } from '../schemas/contactSchemas';
 import { prisma } from '../config/prisma';
+import { appEnv } from '../config/env';
 
 /**
  * Exposes authenticated operations to manage portfolio contact channels.
@@ -37,6 +38,38 @@ export class ContactController {
         : [],
     };
   }
+
+  /**
+   * Returns contact section content publicly (without authentication).
+   * Uses default user email from environment to find user's contact info.
+   */
+  listPublic = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const user = await prisma.user.findFirst({
+        where: { email: appEnv.defaultEmail },
+      });
+
+      if (!user) {
+        return res.json({
+          title: 'Vamos conversar',
+          subtitle: 'Precisa de ajuda com APIs, automação de processos ou integrações?',
+          description: 'Fale um pouco sobre o contexto do projeto e como posso somar. Respondo com clareza sobre prazos, escopo e os próximos passos possíveis.',
+          info: [],
+        });
+      }
+
+      const payload = await this.buildContactPayload(user.id, { includeIds: false });
+      return res.json(payload);
+    } catch (error: any) {
+      console.error('Error in listPublic:', error?.message || error);
+      return res.json({
+        title: 'Vamos conversar',
+        subtitle: 'Precisa de ajuda com APIs, automação de processos ou integrações?',
+        description: 'Fale um pouco sobre o contexto do projeto e como posso somar. Respondo com clareza sobre prazos, escopo e os próximos passos possíveis.',
+        info: [],
+      });
+    }
+  };
 
   /**
    * Returns contact section content for the authenticated user.

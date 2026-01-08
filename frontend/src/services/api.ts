@@ -2,18 +2,17 @@ import type { ContactPayload, Project, User, About, Contact, ExperienceItem, Ser
 
 const getApiBase = (): string => {
   if (typeof window === 'undefined') {
-    return import.meta.env.VITE_API_URL || 'https://api.lucasbiason.com'
+    return import.meta.env.VITE_API_URL || ''
   }
+  
+  // Development
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return import.meta.env.VITE_API_URL || 'http://localhost:3001'
   }
 
-  // In production, use the API subdomain with HTTPS
-  if (window.location.hostname === 'lucasbiason.com' || window.location.hostname === 'www.lucasbiason.com') {
-    return 'https://api.lucasbiason.com'
-  }
-
-  return import.meta.env.VITE_API_URL || window.location.origin
+  // Production: always use same domain with /api path
+  // Never use api.lucasbiason.com subdomain
+  return window.location.origin
 }
 
 // Token management
@@ -59,10 +58,13 @@ const autoLogin = async (): Promise<string> => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Include cookies
       })
 
       if (!response.ok) {
-        throw new Error('Login failed')
+        const errorText = await response.text()
+        console.error('Login failed:', response.status, errorText)
+        throw new Error(`Login failed: ${response.status} ${errorText}`)
       }
 
       const data = await response.json()
@@ -74,6 +76,7 @@ const autoLogin = async (): Promise<string> => {
       throw new Error('No token received')
     } catch (error) {
       console.error('Auto-login failed:', error)
+      // Don't throw - allow requests to continue (they'll get 401 and show error)
       throw error
     }
   })()

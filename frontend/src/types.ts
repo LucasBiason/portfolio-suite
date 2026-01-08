@@ -14,7 +14,7 @@ export type Project = {
   technologies: string[]
   githubUrl?: string
   demoUrl?: string
-  imageUrl?: string
+  imageUrl?: string | string[]
   category: ProjectCategory
   categoryLabel?: string
   featured: boolean

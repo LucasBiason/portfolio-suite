@@ -6,7 +6,9 @@ import { sendContactEmail } from '../services/email';
 const router = Router();
 const controller = new ContactController();
 
-router.get('/info', authMiddleware, controller.list);
+// Public route for portfolio display
+router.get('/info', controller.listPublic);
+// Protected routes for CRUD operations
 router.post('/info', authMiddleware, controller.create);
 router.put('/info/:id', authMiddleware, controller.update);
 router.delete('/info/:id', authMiddleware, controller.delete);

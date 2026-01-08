@@ -22,6 +22,22 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary capturou um erro:', error, errorInfo)
+    // Log to external service if needed
+    if (typeof window !== 'undefined' && window.navigator?.sendBeacon) {
+      try {
+        const errorData = {
+          error: error.toString(),
+          stack: error.stack,
+          componentStack: errorInfo.componentStack,
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+          timestamp: new Date().toISOString()
+        }
+        window.navigator.sendBeacon('/api/errors', JSON.stringify(errorData))
+      } catch {
+        // Ignore beacon errors
+      }
+    }
   }
 
   render() {

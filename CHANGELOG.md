@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.0] - 2026-01-09
+
+### Added
+- Modal de visualização de imagens dos projetos com suporte a ESC e clique fora
+- Componente ImageModal para exibição ampliada de screenshots
+- Nova imagem do Engineering Knowledge Base gerada via ChatGPT
+- Documentação de assets em `docs/README_ASSETS.md`
+
+### Changed
+- Carrossel de projetos com navegação externa (setas fora do card)
+- Engineering Knowledge Base: desabilitado clique na imagem (apenas visualização)
+- Outros projetos mantêm funcionalidade de clique para abrir modal
+- Nginx configurado para servir assets de projetos via proxy do backend
+- Hero component com fallback melhorado para avatar
+
+### Fixed
+- Corrigido problema de modal abrindo dentro do carrossel
+- Corrigido loop infinito de erros ao carregar avatar
+- Corrigido 404 de assets JavaScript/CSS no frontend
+- Ajustado proxy do Nginx para servir apenas `/assets/img/` e `/assets/projects/` do backend
+
+### Removed
+- Scripts temporários removidos do repositório (`backend/scripts/`)
+- Arquivos de feedback e documentação temporária removidos
+- Pasta `backend/scripts/` adicionada ao `.gitignore`
+
 ## [1.0.0] - 2025-11-18
 
 ### Added

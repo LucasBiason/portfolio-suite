@@ -31,3 +31,4 @@ backend/node_modules/
 backend/dist/
 backend/src/generated/
 backend/.env
+backend/scripts/

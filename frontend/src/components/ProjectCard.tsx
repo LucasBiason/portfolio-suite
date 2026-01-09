@@ -4,9 +4,10 @@ import { ImageCarousel } from './ImageCarousel'
 
 type ProjectCardProps = {
   project: Project
+  onImageClick?: (imageUrl: string) => void
 }
 
-export const ProjectCard = memo(({ project }: ProjectCardProps) => {
+export const ProjectCard = memo(({ project, onImageClick }: ProjectCardProps) => {
   // Support both single image and array of images for carousel
   const images = project.imageUrl
     ? Array.isArray(project.imageUrl)
@@ -49,7 +50,11 @@ export const ProjectCard = memo(({ project }: ProjectCardProps) => {
       {/* Screenshot Carousel */}
       {images.length > 0 && (
         <div className="w-full h-48 bg-[#0a0a0a] border-b border-white/5">
-          <ImageCarousel images={images} alt={project.title} />
+          <ImageCarousel 
+            images={images} 
+            alt={project.title} 
+            onImageClick={project.title === 'Engineering Knowledge Base' ? undefined : onImageClick} 
+          />
         </div>
       )}
 

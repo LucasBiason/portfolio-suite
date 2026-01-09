@@ -49,13 +49,19 @@ export const Hero = memo(() => {
         <div className="flex-shrink-0">
           <div className="rounded-full border-4 border-accent-soft shadow-2xl bg-background/20 overflow-hidden">
             <img
-              src={user.avatarUrl || '/assets/img/avatar.jpg'}
+              src={user.avatarUrl || 'http://localhost:3001/assets/img/avatar.jpg'}
               alt={user.name}
               className="h-56 w-56 rounded-full object-cover sm:h-64 sm:w-64"
               onError={(e) => {
-                // Fallback se a imagem não carregar
+                // Prevent infinite loop - only set fallback once
                 const target = e.target as HTMLImageElement;
-                target.src = '/assets/img/avatar.jpg';
+                if (!target.dataset.fallbackSet) {
+                  target.dataset.fallbackSet = 'true';
+                  target.src = 'http://localhost:3001/assets/img/avatar.jpg';
+                } else {
+                  // Hide image if fallback also fails
+                  target.style.display = 'none';
+                }
               }}
             />
           </div>

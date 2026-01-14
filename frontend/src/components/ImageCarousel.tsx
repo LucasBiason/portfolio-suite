@@ -1,22 +1,26 @@
 import { memo, useState } from 'react'
+import { normalizeImageUrls } from '@/utils/assetUrl'
 
 type ImageCarouselProps = {
-  images: string[]
+  images: string | string[]
   alt: string
   onImageClick?: (imageUrl: string) => void
 }
 
 export const ImageCarousel = memo(({ images, alt, onImageClick }: ImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  
+  // Normaliza URLs de imagens
+  const normalizedImages = normalizeImageUrls(images)
 
-  if (!images || images.length === 0) return null
+  if (!normalizedImages || normalizedImages.length === 0) return null
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+    setCurrentIndex((prev) => (prev === 0 ? normalizedImages.length - 1 : prev - 1))
   }
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+    setCurrentIndex((prev) => (prev === normalizedImages.length - 1 ? 0 : prev + 1))
   }
 
   const goToSlide = (index: number) => {
@@ -31,14 +35,14 @@ export const ImageCarousel = memo(({ images, alt, onImageClick }: ImageCarouselP
 
   const hasClickHandler = !!onImageClick
 
-  if (images.length === 1) {
+  if (normalizedImages.length === 1) {
     return (
       <div 
         className={`mb-4 rounded-lg overflow-hidden ${hasClickHandler ? 'cursor-pointer' : ''}`} 
-        onClick={hasClickHandler ? () => handleImageClick(images[0]) : undefined}
+        onClick={hasClickHandler ? () => handleImageClick(normalizedImages[0]) : undefined}
       >
         <img 
-          src={images[0]} 
+          src={normalizedImages[0]} 
           alt={alt} 
           className={`w-full h-48 object-cover transition-opacity ${hasClickHandler ? 'hover:opacity-90' : ''}`} 
         />
@@ -50,10 +54,10 @@ export const ImageCarousel = memo(({ images, alt, onImageClick }: ImageCarouselP
     <div className="mb-4 rounded-lg overflow-hidden relative group">
       <div className="relative h-48 bg-[#0a0a0a]">
         <img
-          src={images[currentIndex]}
-          alt={`${alt} - ${currentIndex + 1} de ${images.length}`}
+          src={normalizedImages[currentIndex]}
+          alt={`${alt} - ${currentIndex + 1} de ${normalizedImages.length}`}
           className={`w-full h-full object-cover transition-opacity ${hasClickHandler ? 'cursor-pointer hover:opacity-90' : ''}`}
-          onClick={hasClickHandler ? () => handleImageClick(images[currentIndex]) : undefined}
+          onClick={hasClickHandler ? () => handleImageClick(normalizedImages[currentIndex]) : undefined}
         />
       
         {/* Navigation buttons */}
@@ -74,7 +78,7 @@ export const ImageCarousel = memo(({ images, alt, onImageClick }: ImageCarouselP
 
         {/* Dots indicator */}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-          {images.map((_, index) => (
+          {normalizedImages.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}

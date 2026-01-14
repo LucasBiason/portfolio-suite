@@ -1,6 +1,7 @@
 import { useEffect, useMemo, memo } from 'react'
 import { useUser } from '@/hooks/useUser'
 import { scrollToSection } from '@/utils/scrollToSection'
+import { getAssetUrl } from '@/utils/assetUrl'
 
 const DEFAULT_SEO_TITLE = 'Portfolio API'
 const DEFAULT_SEO_DESCRIPTION = 'Portfólio dinâmico abastecido por um backend que controla todo o conteúdo.'
@@ -49,7 +50,7 @@ export const Hero = memo(() => {
         <div className="flex-shrink-0">
           <div className="rounded-full border-4 border-accent-soft shadow-2xl bg-background/20 overflow-hidden">
             <img
-              src={user.avatarUrl || 'http://localhost:3001/assets/img/avatar.jpg'}
+              src={getAssetUrl(user.avatarUrl || '/assets/img/avatar.jpg')}
               alt={user.name}
               className="h-56 w-56 rounded-full object-cover sm:h-64 sm:w-64"
               onError={(e) => {
@@ -57,7 +58,7 @@ export const Hero = memo(() => {
                 const target = e.target as HTMLImageElement;
                 if (!target.dataset.fallbackSet) {
                   target.dataset.fallbackSet = 'true';
-                  target.src = 'http://localhost:3001/assets/img/avatar.jpg';
+                  target.src = getAssetUrl('/assets/img/avatar.jpg');
                 } else {
                   // Hide image if fallback also fails
                   target.style.display = 'none';

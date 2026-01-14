@@ -1,4 +1,5 @@
 import { memo, useEffect } from 'react'
+import { getAssetUrl } from '@/utils/assetUrl'
 
 type ImageModalProps = {
   imageUrl: string
@@ -62,7 +63,7 @@ export const ImageModal = memo(({ imageUrl, alt, isOpen, onClose }: ImageModalPr
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={imageUrl}
+          src={getAssetUrl(imageUrl)}
           alt={alt}
           className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
         />

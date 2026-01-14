@@ -9,6 +9,7 @@ type ProjectCardProps = {
 
 export const ProjectCard = memo(({ project, onImageClick }: ProjectCardProps) => {
   // Support both single image and array of images for carousel
+  // Images are already normalized by ImageCarousel component
   const images = project.imageUrl
     ? Array.isArray(project.imageUrl)
       ? project.imageUrl

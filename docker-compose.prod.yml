@@ -12,6 +12,9 @@ services:
       - ./configs/.env.prod
     environment:
       - BETTERSTACK_COLLECTOR_SECRET=${BETTERSTACK_COLLECTOR_SECRET}
+      - DATABASE_URL=postgresql://portfolio:portfolio@database:5432/portfolio?sslmode=disable
+    volumes:
+      - ./configs/.env.prod:/app/configs/.env:ro
     depends_on:
       - database
     networks:

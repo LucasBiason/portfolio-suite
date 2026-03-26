@@ -9,12 +9,22 @@ type ModelWithOrder = {
 /**
  * Reorders records when saving a new or updated record with an `order` field.
  *
- * When the new order conflicts with an existing record:
- * - Shifts all records with order >= newOrder up by 1
- * - If updating an existing record, closes the gap at the old position
+ * When the new order conflicts with an existing record, adjacent records are
+ * shifted to make room:
+ * - For a new record: all records with order >= newOrder are incremented by 1.
+ * - For an existing record moving up: records between [newOrder, oldOrder-1] are incremented.
+ * - For an existing record moving down: records between [oldOrder+1, newOrder] are decremented.
  *
  * Supported models: Project, CareerEntry, StackDetail, Category, Domain,
  * Service, ContactInfo, Education, ProjectImage (uses projectId instead of userId).
+ *
+ * @param model - Prisma model name (e.g. "project", "careerEntry").
+ * @param scopeField - The field that scopes the ordering (e.g. "userId", "projectId").
+ * @param scopeValue - The value of the scope field (e.g. the user's id).
+ * @param newOrder - The desired order position for the record being saved.
+ * @param existingId - The id of the record being updated; omit when inserting.
+ * @returns Resolves when the reordering operations are complete.
+ * @throws Error when the model is not found on the Prisma client.
  */
 export async function reorderOnSave(
   model: string,

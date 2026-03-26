@@ -71,30 +71,21 @@ DATABASE_URL="postgresql://portfolio:portfolio@localhost:5434/portfolio" npx pri
 
 ## Arquitetura
 
-```mermaid
-graph TB
-    Browser["Browser"]
+![Visão Geral](docs/diagrams/architecture-overview.png)
 
-    subgraph VPS["VPS Hostinger"]
-        Nginx["nginx :80/:443"]
+### Fluxo de Autenticação
 
-        subgraph Docker["Docker Network"]
-            Frontend["Frontend<br/>React 19"]
-            Backend["Backend<br/>Express + Prisma"]
-            DB["PostgreSQL 16"]
-        end
-    end
+![Auth Flow](docs/diagrams/auth-flow.png)
 
-    Browser --> Nginx
-    Nginx -->|"/"| Frontend
-    Nginx -->|"/api/*"| Backend
-    Backend --> DB
-```
+### Modelo de Dados
+
+![Database](docs/diagrams/database-diagram.png)
 
 ## Documentação
 
-- [Arquitetura](docs/architecture.md) - Diagramas Mermaid (visão geral, autenticação JWT, fluxo público)
+- [Arquitetura](docs/architecture.md) - Diagramas Mermaid detalhados
 - [Diagrama de Banco](docs/database.dbml) - Modelo de dados (sintaxe DBML para dbdiagram.io)
+- [Coleção Postman](docs/postman/) - 46 requests organizados por domínio
 
 ## Estrutura
 

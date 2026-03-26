@@ -1,3 +1,8 @@
+/**
+ * Multer middleware for handling image file uploads.
+ * Stores files in a temporary directory; the controller is responsible for moving them to their final location.
+ * Accepts only image MIME types (jpeg, png, gif, webp, svg) up to 5 MB.
+ */
 import multer from 'multer';
 import path from 'path';
 import { promises as fs } from 'fs';
@@ -6,7 +11,7 @@ import { mediaRoot } from '../utils/assets';
 
 const UPLOAD_TEMP_DIR = path.join(mediaRoot, 'temp');
 
-// Ensure temp directory exists
+// Ensure the temp directory exists before the first request arrives
 fs.mkdir(UPLOAD_TEMP_DIR, { recursive: true }).catch(console.error);
 
 const storage = multer.diskStorage({
@@ -29,6 +34,10 @@ const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterC
   }
 };
 
+/**
+ * Configured multer instance.
+ * Use as `uploadMiddleware.single('file')` in route definitions.
+ */
 export const uploadMiddleware = multer({
   storage,
   fileFilter,

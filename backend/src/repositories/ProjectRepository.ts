@@ -1,3 +1,6 @@
+/**
+ * Data access layer for portfolio projects.
+ */
 import { prisma } from '../config/prisma';
 import type { Project } from '@prisma/client';
 import { reorderOnSave } from '../utils/reorder';
@@ -39,9 +42,17 @@ const includeRelations = {
 };
 
 /**
- * Camada de acesso a dados responsavel pelos projetos do portfolio.
+ * Data access layer for portfolio projects.
+ * Handles listing, filtering, creation, update and deletion with image and relation support.
  */
 export class ProjectRepository {
+  /**
+   * Lists all published projects for a user, optionally filtered by featured status.
+   *
+   * @param userId - The owner's user ID
+   * @param featured - Optional filter for featured projects
+   * @returns Array of projects with images, categories and stacks
+   */
   async listPublicByUser(userId: string, featured?: boolean) {
     return prisma.project.findMany({
       where: {
@@ -53,6 +64,12 @@ export class ProjectRepository {
     });
   }
 
+  /**
+   * Lists all projects for a user regardless of featured status.
+   *
+   * @param userId - The owner's user ID
+   * @returns Array of projects ordered by position
+   */
   async listByUser(userId: string) {
     return prisma.project.findMany({
       where: { userId },
@@ -61,6 +78,13 @@ export class ProjectRepository {
     });
   }
 
+  /**
+   * Lists projects with server-side filtering, sorting and pagination.
+   *
+   * @param userId - The owner's user ID
+   * @param opts - Filter, sort and pagination options
+   * @returns Paginated result with data, total count and page metadata
+   */
   async listFiltered(userId: string, opts: {
     search?: string;
     categorySlugs?: string[];
@@ -145,6 +169,13 @@ export class ProjectRepository {
     return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
   }
 
+  /**
+   * Finds a single project by ID scoped to the given user.
+   *
+   * @param id - The project ID
+   * @param userId - The owner's user ID
+   * @returns The project with relations, or null if not found
+   */
   async findById(id: string, userId: string) {
     return prisma.project.findFirst({
       where: { id, userId },
@@ -152,6 +183,14 @@ export class ProjectRepository {
     });
   }
 
+  /**
+   * Creates a new project with optional images, categories and stacks.
+   *
+   * @param userId - The owner's user ID
+   * @param data - Project data including optional relation IDs
+   * @param images - Optional array of images to attach
+   * @returns The created project with all relations
+   */
   async create(userId: string, data: CreateProjectInput, images?: ImageInput[]) {
     const { categoryIds, stackIds, ...projectData } = data;
     await reorderOnSave('project', 'userId', userId, projectData.order ?? 0);
@@ -186,6 +225,15 @@ export class ProjectRepository {
     });
   }
 
+  /**
+   * Updates a project, replacing images/categories/stacks when provided.
+   *
+   * @param id - The project ID
+   * @param _userId - The owner's user ID (used for reorder)
+   * @param data - Partial project data with optional relation ID arrays
+   * @param images - If provided, replaces all existing images
+   * @returns The updated project, or null if not found
+   */
   async update(id: string, _userId: string, data: Partial<Project> & { categoryIds?: string[]; stackIds?: string[] }, images?: ImageInput[]) {
     const { categoryIds, stackIds, ...projectData } = data as CreateProjectInput & Partial<Project>;
     if (projectData.order !== undefined) {
@@ -231,6 +279,13 @@ export class ProjectRepository {
     }).catch(() => null);
   }
 
+  /**
+   * Deletes a project by ID.
+   *
+   * @param id - The project ID
+   * @param _userId - The owner's user ID (unused but kept for consistency)
+   * @returns True if deleted, false if not found
+   */
   async delete(id: string, _userId: string): Promise<boolean> {
     return prisma.project
       .delete({ where: { id } })

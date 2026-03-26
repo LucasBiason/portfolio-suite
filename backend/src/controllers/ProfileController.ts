@@ -125,7 +125,7 @@ export class ProfileController {
         return res.status(404).json({ error: 'About not found.' });
       }
 
-      // Separa a bio em description e description2 baseado em quebras de linha
+      // Split bio into description and description2 based on paragraph breaks
       const bioParts = profile.bio.split('\n\n');
       const description = bioParts[0] || profile.bio;
       const description2 = bioParts.slice(1).join('\n\n') || profile.sectionProjectsSubtitle || '';
@@ -176,7 +176,7 @@ export class ProfileController {
     }
     const payload = updateProfileSchema.parse(req.body);
 
-    // Atualizar dados do User (displayName, email) se fornecidos
+    // Update User fields (displayName, email) if provided
     const { displayName, email, ...profileData } = payload;
     if (displayName || email) {
       await prisma.user.update({

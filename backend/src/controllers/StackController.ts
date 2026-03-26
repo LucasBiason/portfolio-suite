@@ -1,12 +1,24 @@
+/**
+ * Controller for technology stack endpoints.
+ * Provides public listing and authenticated admin CRUD operations.
+ */
 import type { Request, Response } from 'express';
 import { StackRepository } from '../repositories/StackRepository';
 import { createStackSchema, updateStackSchema } from '../schemas/stackSchemas';
 import { prisma } from '../config/prisma';
 import { appEnv } from '../config/env';
 
+/**
+ * Handles CRUD operations for technology stack entries.
+ * Provides public listing and authenticated admin endpoints.
+ */
 export class StackController {
   private readonly stackRepository = new StackRepository();
 
+  /**
+   * Lists stack entries publicly without authentication.
+   * Uses the default user email from environment to find records.
+   */
   listPublic = async (req: Request, res: Response): Promise<Response> => {
     try {
       const user = await prisma.user.findFirst({
@@ -21,6 +33,9 @@ export class StackController {
     }
   };
 
+  /**
+   * Lists stack entries for the authenticated user with server-side filtering and pagination.
+   */
   listAdmin = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
     const search = typeof req.query.search === 'string' ? req.query.search : undefined;
@@ -34,12 +49,18 @@ export class StackController {
     return res.json(result);
   };
 
+  /**
+   * Lists stack entries for the authenticated user.
+   */
   list = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
     const stacks = await this.stackRepository.listPublicByUser(req.userId);
     return res.json(stacks);
   };
 
+  /**
+   * Creates a new stack entry linked to the authenticated user.
+   */
   create = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
     const payload = createStackSchema.parse(req.body);
@@ -52,6 +73,9 @@ export class StackController {
     return res.status(201).json(stack);
   };
 
+  /**
+   * Updates an existing stack entry for the authenticated user.
+   */
   update = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
     const payload = updateStackSchema.parse(req.body);
@@ -60,6 +84,9 @@ export class StackController {
     return res.json(updated);
   };
 
+  /**
+   * Removes a stack entry belonging to the authenticated user.
+   */
   delete = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
     const deleted = await this.stackRepository.delete(req.params.id, req.userId);

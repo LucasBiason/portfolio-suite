@@ -1,3 +1,6 @@
+/**
+ * Data access layer for portfolio categories.
+ */
 import { prisma } from '../config/prisma';
 import type { Category } from '@prisma/client';
 import { reorderOnSave } from '../utils/reorder';
@@ -18,10 +21,13 @@ export type CreateCategoryInput = {
   order?: number;
 };
 
-/**
- * Data access layer for portfolio categories.
- */
 export class CategoryRepository {
+  /**
+   * Lists all categories for a user ordered by position.
+   *
+   * @param userId - The owner's user ID
+   * @returns Array of categories
+   */
   async listByUser(userId: string): Promise<Category[]> {
     return prisma.category.findMany({
       where: { userId },
@@ -29,6 +35,14 @@ export class CategoryRepository {
     });
   }
 
+  /**
+   * Creates a new category linked to the given user.
+   * Auto-generates a slug from the name when not provided.
+   *
+   * @param userId - The owner's user ID
+   * @param data - Category data
+   * @returns The created category
+   */
   async create(userId: string, data: CreateCategoryInput): Promise<Category> {
     const slug = data.slug ?? toSlug(data.name);
     await reorderOnSave('category', 'userId', userId, data.order ?? 0);
@@ -44,6 +58,15 @@ export class CategoryRepository {
     });
   }
 
+  /**
+   * Updates a category scoped to the given user.
+   * Auto-generates a new slug when the name changes without an explicit slug.
+   *
+   * @param id - The category ID
+   * @param userId - The owner's user ID
+   * @param data - Partial category data
+   * @returns The updated category, or null if not found
+   */
   async update(id: string, userId: string, data: Partial<CreateCategoryInput>): Promise<Category | null> {
     const existing = await prisma.category.findFirst({ where: { id, userId } });
     if (!existing) {
@@ -63,6 +86,13 @@ export class CategoryRepository {
     });
   }
 
+  /**
+   * Deletes a category scoped to the given user.
+   *
+   * @param id - The category ID
+   * @param userId - The owner's user ID
+   * @returns True if deleted, false if not found
+   */
   async delete(id: string, userId: string): Promise<boolean> {
     const existing = await prisma.category.findFirst({ where: { id, userId } });
     if (!existing) {

@@ -1,3 +1,7 @@
+/**
+ * Data access layer for career entries.
+ * Handles listing, filtering, creation, update and deletion with stack and domain relations.
+ */
 import { prisma } from '../config/prisma';
 import type { CareerEntry } from '@prisma/client';
 import { reorderOnSave } from '../utils/reorder';
@@ -15,7 +19,16 @@ const includeStacks = {
   },
 };
 
+/**
+ * Data access layer for career entries.
+ */
 export class CareerRepository {
+  /**
+   * Lists all career entries for a user ordered by position.
+   *
+   * @param userId - The owner's user ID
+   * @returns Array of career entries with stacks and domains
+   */
   async listPublicByUser(userId: string) {
     return prisma.careerEntry.findMany({
       where: { userId },
@@ -24,6 +37,13 @@ export class CareerRepository {
     });
   }
 
+  /**
+   * Lists career entries with server-side filtering, sorting and pagination.
+   *
+   * @param userId - The owner's user ID
+   * @param opts - Filter, sort and pagination options
+   * @returns Paginated result with data, total count and page metadata
+   */
   async listFiltered(userId: string, opts: {
     search?: string;
     domainSlugs?: string[];
@@ -71,6 +91,15 @@ export class CareerRepository {
     return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
   }
 
+  /**
+   * Creates a new career entry with optional stack and domain associations.
+   *
+   * @param userId - The owner's user ID
+   * @param data - Career entry data
+   * @param stackIds - Stack IDs to associate
+   * @param domainIds - Domain IDs to associate
+   * @returns The created entry with all relations
+   */
   async create(userId: string, data: CareerEntryData, stackIds: string[] = [], domainIds: string[] = []) {
     await reorderOnSave('careerEntry', 'userId', userId, data.order ?? 0);
     return prisma.careerEntry.create({
@@ -92,6 +121,16 @@ export class CareerRepository {
     });
   }
 
+  /**
+   * Updates a career entry, replacing stacks and domains when provided.
+   *
+   * @param id - The career entry ID
+   * @param userId - The owner's user ID
+   * @param data - Partial career entry data
+   * @param stackIds - If provided, replaces all existing stack associations
+   * @param domainIds - If provided, replaces all existing domain associations
+   * @returns The updated entry, or null if not found
+   */
   async update(id: string, userId: string, data: Partial<CareerEntryData>, stackIds?: string[], domainIds?: string[]) {
     const existing = await prisma.careerEntry.findFirst({ where: { id, userId } });
     if (!existing) return null;
@@ -125,6 +164,13 @@ export class CareerRepository {
     });
   }
 
+  /**
+   * Deletes a career entry scoped to the given user.
+   *
+   * @param id - The career entry ID
+   * @param userId - The owner's user ID
+   * @returns True if deleted, false if not found
+   */
   async delete(id: string, userId: string): Promise<boolean> {
     const existing = await prisma.careerEntry.findFirst({ where: { id, userId } });
     if (!existing) return false;

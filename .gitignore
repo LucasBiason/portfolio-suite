@@ -33,3 +33,7 @@ backend/src/generated/
 backend/.env
 backend/scripts/
 backend/prisma/seed.production.ts
+backend/prisma/seed.js
+
+# Media (uploaded files, profile photos, project images)
+media/

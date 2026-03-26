@@ -193,11 +193,9 @@ TimelineItem.displayName = 'TimelineItem'
 
 const statsDef = [
   { key: 'years', label: 'Anos de experiência', icon: Clock, corner: 'from-accent to-primary', bg: 'bg-accent/20', color: 'text-accent' },
-  { key: 'entries', label: 'Experiências profissionais', icon: Briefcase, corner: 'from-green to-green/60', bg: 'bg-green/20', color: 'text-green' },
-  { key: 'domains', label: 'Domínios de negócio', icon: Globe, corner: 'from-yellow to-yellow/60', bg: 'bg-yellow/20', color: 'text-yellow' },
-  { key: 'stacks', label: 'Tecnologias dominadas', icon: Layers, corner: 'from-purple to-purple/60', bg: 'bg-purple/20', color: 'text-purple' },
-  { key: 'patterns', label: 'Especialistas', icon: Code, corner: 'from-orange to-orange/60', bg: 'bg-orange/20', color: 'text-orange' },
-  { key: 'solutions', label: 'Avançados', icon: Link2, corner: 'from-red to-red/60', bg: 'bg-red/20', color: 'text-red' },
+  { key: 'entries', label: 'Experiências', icon: Briefcase, corner: 'from-green to-green/60', bg: 'bg-green/20', color: 'text-green' },
+  { key: 'domains', label: 'Domínios', icon: Globe, corner: 'from-yellow to-yellow/60', bg: 'bg-yellow/20', color: 'text-yellow' },
+  { key: 'stacks', label: 'Tecnologias', icon: Layers, corner: 'from-purple to-purple/60', bg: 'bg-purple/20', color: 'text-purple' },
 ]
 
 // Domains and patterns are derived from career data - no hardcoded values
@@ -209,12 +207,10 @@ export const CareerPage = memo(() => {
   const pageConfig = apiStats.pageConfig
 
   const statsValues: Record<string, string> = {
-    years: `${apiStats.career.totalYears}+`,
+    years: apiStats.career.totalYears,
     entries: String(apiStats.career.totalEntries),
     domains: String(apiStats.career.totalDomains),
     stacks: String(apiStats.stacks.totalStacks),
-    patterns: String(apiStats.stacks.expertCount),
-    solutions: String(apiStats.stacks.advancedCount),
   }
 
   // Domínios extraídos dos dados de career (dinâmico)
@@ -263,7 +259,7 @@ export const CareerPage = memo(() => {
           )}
 
           {/* Stats */}
-          <div className="mx-auto mt-10 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
             {statsDef.map((s) => (
               <HighlightCard
                 key={s.key}

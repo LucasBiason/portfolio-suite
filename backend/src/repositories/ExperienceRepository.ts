@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma';
 import type { Experience } from '@prisma/client';
+import { reorderOnSave } from '../utils/reorder';
 
 /**
  * Abstrai o acesso às experiências profissionais no banco.
@@ -13,6 +14,7 @@ export class ExperienceRepository {
   }
 
   async create(userId: string, data: Omit<Experience, 'id' | 'userId' | 'createdAt' | 'updatedAt'>): Promise<Experience> {
+    await reorderOnSave('experience', 'userId', userId, data.order ?? 0);
     return prisma.experience.create({
       data: {
         ...data,
@@ -25,6 +27,9 @@ export class ExperienceRepository {
     const existing = await prisma.experience.findFirst({ where: { id, userId } });
     if (!existing) {
       return null;
+    }
+    if (data.order !== undefined) {
+      await reorderOnSave('experience', 'userId', userId, data.order, id);
     }
     return prisma.experience.update({
       where: { id },

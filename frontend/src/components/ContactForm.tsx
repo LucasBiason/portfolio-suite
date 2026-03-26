@@ -89,7 +89,7 @@ export const ContactForm = memo(() => {
           className="w-full rounded border border-grey-50 bg-white px-4 py-3 font-body text-black shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
         />
         {feedback && (
-          <p className={`text-sm ${feedback.includes('sucesso') ? 'text-green-400' : 'text-red-400'}`}>
+          <p className={`text-sm ${feedback.includes('sucesso') ? 'text-green' : 'text-red'}`}>
             {feedback}
           </p>
         )}
@@ -103,38 +103,6 @@ export const ContactForm = memo(() => {
         </button>
       </form>
 
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-        {contact.info.map((info) => (
-          <div
-            key={info.title}
-            className="relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br from-secondary/80 to-black/60 p-6 text-center shadow-lg"
-          >
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-primary blur-3xl" />
-            </div>
-            <div className="relative flex flex-col items-center gap-2 text-white">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/80">
-                <i className={`bx ${info.icon} text-2xl text-accent`} />
-              </span>
-              <span className="font-body text-xs font-semibold uppercase tracking-wide text-grey-20">
-                {info.title}
-              </span>
-              {info.href ? (
-                <a
-                  href={info.href}
-                  target={info.href.startsWith('http') ? '_blank' : undefined}
-                  rel={info.href.startsWith('http') ? 'noreferrer' : undefined}
-                  className="font-header text-lg text-accent transition-colors hover:text-white"
-                >
-                  {info.value}
-                </a>
-              ) : (
-                <p className="font-header text-lg text-white">{info.value}</p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
     </section>
   )
 })

@@ -8,6 +8,9 @@ const controller = new ContactController();
 
 // Public route for portfolio display
 router.get('/info', controller.listPublic);
+// Authenticated routes for admin
+router.get('/admin', authMiddleware, controller.list);
+router.get('/admin/list', authMiddleware, controller.listAdminFiltered);
 // Protected routes for CRUD operations
 router.post('/info', authMiddleware, controller.create);
 router.put('/info/:id', authMiddleware, controller.update);

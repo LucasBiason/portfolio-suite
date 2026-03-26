@@ -1,4 +1,5 @@
 import { useEffect, Suspense, lazy } from 'react'
+import { useTheme } from '@/hooks/useTheme'
 import { Header } from '@/components/Header'
 import { Hero } from '@/components/Hero'
 import { AboutSection } from '@/components/AboutSection'
@@ -23,6 +24,7 @@ const LazyContactForm = lazy(() =>
 )
 
 const App = () => {
+  useTheme()
   const { projects, loading, error } = useProjects()
 
   useEffect(() => {
@@ -51,24 +53,8 @@ const App = () => {
         <AboutSection />
         <ServicesSection />
 
-        {loading && (
-          <section className="container py-16 text-center font-body text-grey-20">
-            Carregando projetos reais do portfólio...
-          </section>
-        )}
-
-        {error && !loading && (
-          <section className="container py-16 text-center font-body text-red-400">
-            {error}
-          </section>
-        )}
-
-        {!loading && !error && <ProjectsSection projects={projects} />}
-
-        {/* Experiência removida temporariamente - já está no LinkedIn e CV */}
-        {/* <Suspense fallback={<div className="container py-16 text-center text-grey-20">Carregando...</div>}>
-          <LazyExperienceSection />
-        </Suspense> */}
+        {/* Projetos movidos para /projetos */}
+        {/* Experiência movida para /historico */}
         <Suspense fallback={<div className="container py-16 text-center text-grey-20">Carregando...</div>}>
           <LazyContactForm />
         </Suspense>

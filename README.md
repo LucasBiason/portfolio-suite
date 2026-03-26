@@ -1,166 +1,137 @@
-# 📂 Portfolio Suite
+# Portfolio Suite
 
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-18+-61dafb.svg)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+Portfolio profissional completo com painel administrativo, construido com Node.js (Express + Prisma + PostgreSQL) e React 19 (Vite + Tailwind CSS). Deploy em VPS com Docker Compose e nginx.
 
-> **Portfólio profissional fullstack desenvolvido com React e Node.js, apresentando projetos reais de Machine Learning e APIs em produção, com sistema completo de gerenciamento de conteúdo e formulário de contato integrado.**
+## Screenshots
 
-## 🌟 Destaques
+### Admin Dashboard
+![Dashboard](assets/screenshots/02-dashboard.png)
 
-- 🧠 **API REST completa** com arquitetura MVC (controllers + repositories), Prisma ORM, PostgreSQL e autenticação JWT
-- 🎨 **Frontend moderno e responsivo** em React 18 + TypeScript + TailwindCSS, com design baseado no template [Atom](https://www.tailawesome.com/resources/atom)
-- 📬 **Sistema de contato profissional** com envio de emails via SMTP e cards de informação configuráveis dinamicamente
-- 👥 **Arquitetura multiusuário**: cada conta gerencia seu próprio portfólio, projetos, experiências profissionais e serviços oferecidos
-- 🐳 **Infraestrutura containerizada** com Docker Compose incluindo frontend, backend, PostgreSQL e Nginx reverso proxy
-- 📸 **Galeria de projetos** com suporte a imagens e screenshots dos projetos em destaque
-- 🔒 **Segurança robusta** com JWT, validação de dados via Zod e isolamento de dados por usuário
+### Login
+![Login](assets/screenshots/01-login.png)
 
-## 🏗️ Arquitetura
+### Projetos
+![Projetos](assets/screenshots/03-projects.png)
+
+### Historico Profissional
+![Historico](assets/screenshots/04-career.png)
+
+### Stacks & Tecnologias
+![Stacks](assets/screenshots/05-stacks.png)
+
+### Categorias
+![Categorias](assets/screenshots/06-categories.png)
+
+## Stack
+
+### Backend
+- **Node.js 18** + Express
+- **Prisma ORM** + PostgreSQL 16
+- **JWT** para autenticacao
+- **Zod** para validacao de schemas
+- **Multer** para upload de arquivos
+
+### Frontend
+- **React 19** + TypeScript
+- **Vite** para build
+- **Tailwind CSS** com tema Nord
+- **Lucide React** para icones
+- **React Router** para navegacao SPA
+
+### Infraestrutura
+- **Docker Compose** para desenvolvimento e producao
+- **nginx** como reverse proxy (producao)
+- **PostgreSQL 16** Alpine
+
+## Funcionalidades
+
+### Portfolio Publico (4 paginas)
+- **Landing Page** - Hero, About, Servicos, Formulario de contato
+- **Projetos & Formacao** - 11 projetos com carrossel de imagens, 4 formacoes
+- **Historico Profissional** - Timeline expandivel com stats dinamicos, filtros por dominio
+- **Stacks & Ferramentas** - 18 tecnologias com detalhamento, filtro por categoria
+
+### Painel Administrativo (12 paginas)
+- **Dashboard** - Graficos interativos (pizza, barras horizontais), indicadores de saude, atividade recente
+- **Projetos** - CRUD com filtros server-side, categorias e stacks many-to-many, upload de imagens
+- **Historico** - CRUD com stacks e dominios aninhados, tipo de contrato, duracao calculada
+- **Stacks** - CRUD com categoria FK, startYear/endYear, niveis (Especialista/Avancado/Intermediario/Basico)
+- **Categorias** - CRUD com filtro por tipo (Projeto/Stack), cores e icones
+- **Dominios** - CRUD de dominios de atuacao com cores
+- **Servicos** - CRUD de especialidades
+- **Contatos** - CRUD de links sociais e contatos com filtro por tipo
+- **Formacao** - CRUD de educacao/certificacoes
+- **Perfil** - Upload de avatar, bio, SEO, configuracao de secoes
+- **Configuracoes** - Paleta de cores, tipografia, SMTP configuravel
+- **Login** - Autenticacao JWT com interface moderna
+
+### Backend (14+ endpoints)
+- Auth, Profile, Projects, Career, Stacks, Categories, Domains, Services, Contacts, Education, Settings, Stats, Assets
+
+### Features Tecnicas
+- Reordenacao automatica (`reorderOnSave`) em todos os cadastros com campo `order`
+- Stats dinamicos via `/api/stats/public`
+- Filtros server-side com busca, paginacao e ordenacao em todas as telas admin
+- SMTP configuravel via painel admin
+- Upload de imagens com servico de assets
+
+## Como Rodar
+
+### Desenvolvimento
+```bash
+docker compose up -d
+```
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3001
+- Database: localhost:5434
+
+### Producao
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+## Estrutura do Projeto
 
 ```
 portfolio-suite/
-├── backend/          # API Node.js
-│   ├── src/
-│   │   ├── controllers/   # regras de negócio (Auth, Profile, Projects etc.)
-│   │   ├── repositories/  # Prisma + Postgres
-│   │   ├── routes/        # views (Express)
-│   │   ├── schemas/       # validações Zod
-│   │   └── services/      # integração SMTP, bootstrap
-│   └── prisma/       # schema, migrations
-├── frontend/         # SPA React (Vite + Tailwind)
-├── configs/          # Templates de ambiente
-├── docker-compose.yml
-├── Makefile
-└── README.md
+  backend/
+    src/
+      controllers/    # 12 controllers (Auth, Profile, Project, Career, Stack, ...)
+      repositories/   # Repository pattern com Prisma
+      routes/         # Express routes
+      schemas/        # Zod validation schemas
+      utils/          # JWT, password, reorder, slug
+    prisma/
+      schema.prisma   # 17 models
+      seed.ts         # Seed completo com dados reais
+  frontend/
+    src/
+      components/     # Header, Hero, Footer, ContactForm, ...
+      pages/
+        admin/        # 12 paginas admin
+        *.tsx          # 4 paginas publicas
+      hooks/          # useStacks, useStats, useTheme
+      services/       # API client
+  nginx/              # Configuracao nginx (prod)
+  configs/            # Environment files
+  assets/
+    screenshots/      # Screenshots do admin
 ```
 
-### Componentes
-- **Backend**: Express, Prisma, Zod, Nodemailer, JWT
-- **Frontend**: React, Vite, Tailwind, layout Atom customizado
-- **Infra**: Docker Compose, Postgres, Nginx para servir SPA/APIs
+## Modelos de Dados
 
-## 🚀 Como Executar
+- **User** - Autenticacao e perfil
+- **Profile** - Bio, SEO, configuracoes visuais
+- **Project** - Projetos com imagens, categorias e stacks (many-to-many)
+- **CareerEntry** - Historico com stacks e dominios (many-to-many)
+- **StackDetail** - Tecnologias com categoria FK, nivel, startYear/endYear
+- **Category** - Categorias de projetos e stacks com cores
+- **Domain** - Dominios de atuacao profissional
+- **Education** - Formacao academica
+- **Service** - Especialidades/servicos oferecidos
+- **ContactInfo** - Links sociais e contatos
+- **SiteSettings** - Cores, fontes, SMTP, textos de paginas
 
-### Requisitos
-- Node.js 18+
-- npm 10+
-- Docker Desktop ou Engine + Compose
+## Licenca
 
-### 1. Configurar variáveis de ambiente
-
-```bash
-cp configs/portfolio.env.example configs/.env
-cp configs/portfolio.env.example configs/.env.prod
-```
-
-Edite cada arquivo com os valores reais (local e produção). Exemplo de conteúdo:
-
-```
-PORT=3001
-JWT_SECRET=troque_por_um_segredo_seguro
-PORTFOLIO_DEFAULT_EMAIL=lucas.biason@foxcodesoftware.com
-PORTFOLIO_DEFAULT_PASSWORD=senha_portfolio
-SMTP_HOST=smtp.seuprovedor.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=contato@seuprojeto.com
-SMTP_PASS=senha-ou-app-password
-CONTACT_EMAIL=destinatario@seuprojeto.com
-ASSET_BASE_URL=http://localhost:3001
-VITE_API_URL=http://localhost:3001
-DATABASE_URL=postgresql://portfolio:portfolio@portfolio-db:5432/portfolio?schema=public
-```
-
-> **Como obter dados SMTP?** Consulte o provedor do seu email:
-> - Gmail: `smtp.gmail.com`, porta `587`, exige **App Password** (conta > Segurança > App passwords).
-> - Outlook/Hotmail: `smtp.office365.com`, porta `587`, Use senha normal ou app password (2FA).
-> - Zoho: `smtp.zoho.com`, porta `587`.
-> Sempre habilite TLS (`SMTP_SECURE=false` com porta 587) ou SSL (`true` com porta 465) conforme o serviço.
-
-### 2. Instalar dependências (modo dev)
-
-```bash
-make install
-```
-
-### 3. Aplicar migrations do Prisma
-
-```bash
-cd backend
-npx prisma migrate deploy
-cd ..
-```
-
-### 4. Rodar em desenvolvimento
-
-```bash
-# Backend + Frontend (dois terminais)
-make backend    # http://localhost:3001
-make frontend   # http://localhost:5173
-```
-
-### 5. Rodar com Docker (produção)
-
-```bash
-make up
-# Frontend: http://localhost:5173
-# API:      http://localhost:3001
-```
-
-Parar e limpar:
-```bash
-make down
-make clean
-```
-
-## 🔌 Endpoints da API
-
-A especificação completa está em [`docs/API.md`](docs/API.md) e há uma collection Postman pronta em `docs/postman/PortfolioSuite.postman_collection.json`. Principais rotas:
-
-| Método | Rota                    | Descrição                                  | Auth |
-|--------|-------------------------|--------------------------------------------|------|
-| GET    | `/health`               | Health check                               | Não  |
-| POST   | `/api/auth/login`       | Retorna JWT                                | Não  |
-| GET    | `/api/user`             | Perfil público (usado no frontend)         | Não  |
-| GET    | `/api/projects`         | Projetos públicos (`?featured=true/false`) | Não  |
-| GET    | `/api/projects/me`      | Lista projetos do usuário logado           | JWT  |
-| POST   | `/api/projects`         | CRUD completo de projetos                  | JWT  |
-| GET    | `/api/experience`       | Timeline pública                           | Não  |
-| GET    | `/api/services`         | Serviços públicos                          | Não  |
-| GET    | `/api/contact/info`     | Conteúdo e cards da seção Contato          | Não  |
-| POST   | `/api/contact`          | Envio de mensagem (SMTP)                   | Não  |
-| GET    | `/api/admin/stats`      | Métricas gerais                            | JWT  |
-
-### Autenticação
-- Fluxo baseado em **JWT** (`/api/auth/login`). Utilize o email/senha definidos em `PORTFOLIO_DEFAULT_*` ou crie usuários via `/api/auth/register`.
-- O frontend consome apenas rotas públicas usando o usuário padrão definido em `PORTFOLIO_DEFAULT_EMAIL`.
-
-## 🖥️ Frontend
-- Hero com background gradiente, foto, social icons e CTA
-- Seções Sobre, Especialidades, Projetos (dinâmico), Experiência e Contato
-- Formulário de contato inspirado no layout Atom, alimentando `/api/contact`
-- Componentes Tailwind 3.x com tipografia `Raleway` e `Open Sans`
-
-## 🎯 Demo
-
-Acesse o portfólio em produção: **[lucasbiason.com](https://lucasbiason.com)**
-
-## 🛠️ Makefile
-
-```
-make install   # instala deps
-make backend   # inicia API (nodemon)
-make frontend  # inicia SPA
-make up        # sobe stack Docker
-make down      # derruba stack
-make clean     # remove node_modules / dist
-```
-
-## 📝 Changelog
-Veja [CHANGELOG.md](CHANGELOG.md).
-
-## 📄 Licença
-Este projeto está licenciado sob a [MIT License](LICENSE).
+Privado - Lucas Biason

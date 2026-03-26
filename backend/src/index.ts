@@ -11,6 +11,13 @@ import servicesRouter from './routes/services';
 import authRouter from './routes/auth';
 import profileRouter from './routes/profile';
 import assetsRouter from './routes/assets';
+import careerRouter from './routes/career';
+import stacksRouter from './routes/stacks';
+import settingsRouter from './routes/settings';
+import statsRouter from './routes/stats';
+import categoriesRouter from './routes/categories';
+import domainsRouter from './routes/domains';
+import educationRouter from './routes/education';
 import { assetsRoot } from './utils/assets';
 import { appEnv } from './config/env';
 
@@ -70,6 +77,13 @@ app.use('/api/about', aboutRouter);
 app.use('/api/experience', experienceRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/assets', assetsRouter);
+app.use('/api/career', careerRouter);
+app.use('/api/stacks', stacksRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api/stats', statsRouter);
+app.use('/api/education', educationRouter);
+app.use('/api/categories', categoriesRouter);
+app.use('/api/domains', domainsRouter);
 
 // Error handling
 app.use((err: Error, req: Request, res: Response, next: any) => {

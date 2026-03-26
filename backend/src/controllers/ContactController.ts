@@ -82,9 +82,18 @@ export class ContactController {
     return res.json(payload);
   };
 
-  /**
-   * Creates a new contact card linked to the authenticated user.
-   */
+  listAdminFiltered = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
+    const search = typeof req.query.search === 'string' ? req.query.search : undefined;
+    const typeFilter = typeof req.query.type === 'string' ? req.query.type : undefined;
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 20;
+    const sortBy = typeof req.query.sortBy === 'string' ? req.query.sortBy : 'order';
+    const sortDir = req.query.sortDir === 'desc' ? 'desc' as const : 'asc' as const;
+    const result = await this.contactRepository.listFiltered(req.userId, { search, typeFilter, page, pageSize, sortBy, sortDir });
+    return res.json(result);
+  };
+
   create = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Unauthorized.' });

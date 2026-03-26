@@ -1,4 +1,5 @@
 import { useEffect, useMemo, memo } from 'react'
+import { Link } from 'react-router-dom'
 import { useUser } from '@/hooks/useUser'
 import { scrollToSection } from '@/utils/scrollToSection'
 import { getAssetUrl } from '@/utils/assetUrl'
@@ -47,24 +48,37 @@ export const Hero = memo(() => {
     >
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-hero-gradient-from to-hero-gradient-to" />
       <div className="container relative z-20 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 py-16 sm:flex-row sm:py-20">
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex flex-col items-center gap-4">
           <div className="rounded-full border-4 border-accent-soft shadow-2xl bg-background/20 overflow-hidden">
             <img
               src={getAssetUrl(user.avatarUrl || '/assets/img/avatar.jpg')}
               alt={user.name}
               className="h-56 w-56 rounded-full object-cover sm:h-64 sm:w-64"
               onError={(e) => {
-                // Prevent infinite loop - only set fallback once
                 const target = e.target as HTMLImageElement;
                 if (!target.dataset.fallbackSet) {
                   target.dataset.fallbackSet = 'true';
                   target.src = getAssetUrl('/assets/img/avatar.jpg');
                 } else {
-                  // Hide image if fallback also fails
                   target.style.display = 'none';
                 }
               }}
             />
+          </div>
+          {/* Social links below avatar */}
+          <div className="flex items-center gap-4 text-white">
+            {user.socialLinks.map((item) => (
+              <a
+                key={item.icon}
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={item.label}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-xl transition hover:-translate-y-1 hover:border-accent hover:text-accent"
+              >
+                <i className={`bx ${item.icon}`} />
+              </a>
+            ))}
           </div>
         </div>
         <div className="max-w-2xl text-center sm:text-left">
@@ -72,29 +86,27 @@ export const Hero = memo(() => {
             {user.subtitle}
           </span>
           <h1 className="mt-5 font-header text-4xl text-white sm:text-5xl md:text-6xl">{user.title}</h1>
-          <p className="mt-6 font-body text-lg leading-relaxed text-white/85 sm:text-xl">{user.bio}</p>
-          <div className="mt-8 flex flex-col items-center gap-5 sm:flex-row sm:items-center">
-            <button
-              type="button"
-              className="rounded-full bg-primary px-8 py-3 font-header text-sm font-bold uppercase tracking-[0.3em] text-white transition-colors hover:bg-primary-dark"
-              onClick={() => scrollToSection('#contato')}
+          <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:flex-wrap sm:justify-center">
+            <Link
+              to="/projetos"
+              className="inline-flex items-center justify-center rounded-full bg-primary min-w-[220px] px-6 py-3 font-header text-sm font-bold uppercase tracking-[0.2em] text-white text-center transition-colors hover:bg-primary-dark"
             >
-              Vamos conversar
-            </button>
-            <div className="flex items-center gap-4 text-white">
-              {user.socialLinks.map((item) => (
-                <a
-                  key={item.icon}
-                  href={item.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={item.label}
-                  className="text-2xl hover:text-accent"
-                >
-                  <i className={`bx ${item.icon}`} />
-                </a>
-              ))}
-            </div>
+              Projetos & Formação
+            </Link>
+            <Link
+              to="/historico"
+              className="inline-flex items-center justify-center rounded-full bg-primary min-w-[220px] px-6 py-3 font-header text-sm font-bold uppercase tracking-[0.2em] text-white text-center transition-colors hover:bg-primary-dark"
+            >
+              Histórico Profissional
+            </Link>
+            {/* Stacks temporariamente oculto
+            <Link
+              to="/stacks"
+              className="inline-flex items-center justify-center rounded-full bg-primary min-w-[220px] px-6 py-3 font-header text-sm font-bold uppercase tracking-[0.2em] text-white text-center transition-colors hover:bg-primary-dark"
+            >
+              Stacks & Ferramentas
+            </Link>
+            */}
           </div>
         </div>
       </div>

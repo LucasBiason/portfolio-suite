@@ -32,3 +32,4 @@ backend/dist/
 backend/src/generated/
 backend/.env
 backend/scripts/
+backend/prisma/seed.production.ts

@@ -7,6 +7,7 @@ const controller = new ServiceController();
 
 // Public route for portfolio display
 router.get('/', controller.listPublic);
+router.get('/admin', authMiddleware, controller.listAdmin);
 // Protected routes for CRUD operations
 router.post('/', authMiddleware, controller.create);
 router.put('/:id', authMiddleware, controller.update);

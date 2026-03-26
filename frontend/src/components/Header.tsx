@@ -14,7 +14,7 @@ const landingNavItems = [
 const pageNavItems = [
   { label: 'Projetos & Formação', to: '/projetos' },
   { label: 'Histórico', to: '/historico' },
-  // { label: 'Stacks', to: '/stacks' }, // temporariamente oculto
+  { label: 'Stacks', to: '/stacks' },
 ]
 
 export const Header = memo(() => {

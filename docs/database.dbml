@@ -1,0 +1,248 @@
+// Portfolio Suite - Database Schema
+// Sintaxe: DBML (https://dbdiagram.io)
+// Gerar diagrama visual em: https://dbdiagram.io/d
+
+Table User {
+  id uuid [pk, default: `uuid()`]
+  email varchar [unique, not null]
+  passwordHash varchar [not null]
+  displayName varchar [not null]
+  slug varchar [unique, not null]
+  active boolean [default: true]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table Profile {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [unique, ref: - User.id]
+  title varchar [not null]
+  subtitle varchar [not null]
+  bio text [not null]
+  highlights text[]
+  avatarUrl varchar
+  heroBackgroundUrl varchar
+  seoTitle varchar
+  seoDescription varchar
+  footerTitle varchar
+  footerDescription varchar
+  footerTagline varchar
+  sectionProjectsTitle varchar
+  sectionProjectsSubtitle varchar
+  contactTitle varchar
+  contactSubtitle varchar
+  contactDescription varchar
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table Category {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  name varchar [not null]
+  slug varchar [not null]
+  icon varchar
+  color varchar
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+
+  indexes {
+    (userId, slug) [unique]
+  }
+}
+
+Table Project {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  title varchar [not null]
+  description text [not null]
+  longDescription text
+  technologies text[]
+  githubUrl varchar
+  demoUrl varchar
+  imageUrl varchar
+  featured boolean [default: false]
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table ProjectImage {
+  id uuid [pk, default: `uuid()`]
+  projectId uuid [ref: > Project.id]
+  url varchar [not null]
+  alt varchar
+  order int [default: 0]
+}
+
+Table ProjectCategory {
+  id uuid [pk, default: `uuid()`]
+  projectId uuid [ref: > Project.id]
+  categoryId uuid [ref: > Category.id]
+
+  indexes {
+    (projectId, categoryId) [unique]
+  }
+}
+
+Table ProjectStack {
+  id uuid [pk, default: `uuid()`]
+  projectId uuid [ref: > Project.id]
+  stackDetailId uuid [ref: > StackDetail.id]
+
+  indexes {
+    (projectId, stackDetailId) [unique]
+  }
+}
+
+Table StackDetail {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  name varchar [not null]
+  categoryId uuid [ref: > Category.id]
+  startYear int [not null]
+  endYear int
+  level varchar [not null]
+  icon varchar
+  profProjects text[]
+  personalProjects text[]
+  solutions text[]
+  patterns text[]
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table Domain {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  name varchar [not null]
+  slug varchar [not null]
+  icon varchar
+  color varchar
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+
+  indexes {
+    (userId, slug) [unique]
+  }
+}
+
+Table CareerEntry {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  company varchar [not null]
+  role varchar [not null]
+  contractType varchar [default: 'CLT']
+  startDate timestamp [not null]
+  endDate timestamp
+  summary text [not null]
+  projectTypes text[]
+  actions text[]
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table CareerStack {
+  id uuid [pk, default: `uuid()`]
+  careerEntryId uuid [ref: > CareerEntry.id]
+  stackDetailId uuid [ref: > StackDetail.id]
+
+  indexes {
+    (careerEntryId, stackDetailId) [unique]
+  }
+}
+
+Table CareerDomain {
+  id uuid [pk, default: `uuid()`]
+  careerEntryId uuid [ref: > CareerEntry.id]
+  domainId uuid [ref: > Domain.id]
+
+  indexes {
+    (careerEntryId, domainId) [unique]
+  }
+}
+
+Table Experience {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  company varchar [not null]
+  role varchar [not null]
+  period varchar [not null]
+  summary text [not null]
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table Education {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  title varchar [not null]
+  institution varchar [not null]
+  period varchar [not null]
+  description text
+  status varchar [default: 'completed']
+  tags text[]
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table Service {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  title varchar [not null]
+  description text [not null]
+  icon varchar
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table ContactInfo {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [ref: > User.id]
+  title varchar [not null]
+  value varchar [not null]
+  href varchar
+  icon varchar
+  type varchar
+  order int [default: 0]
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}
+
+Table SiteSettings {
+  id uuid [pk, default: `uuid()`]
+  userId uuid [unique, ref: - User.id]
+  primaryColor varchar [default: '#0047AB']
+  primaryDarkColor varchar [default: '#002D6B']
+  accentColor varchar [default: '#30A0FF']
+  accentSoftColor varchar [default: '#99C8FF']
+  backgroundColor varchar [default: '#121417']
+  surfaceColor varchar [default: '#1A1D22']
+  textColor varchar [default: '#ffffff']
+  headerFont varchar [default: 'Raleway']
+  bodyFont varchar [default: 'Open Sans']
+  projectsPageTitle varchar
+  projectsPageSubtitle varchar
+  projectsGithubUrl varchar
+  projectsGithubLabel varchar
+  projectsGithubHint varchar
+  careerPageTitle varchar
+  careerPageSubtitle varchar
+  stacksPageTitle varchar
+  stacksPageSubtitle varchar
+  smtpHost varchar
+  smtpPort int [default: 587]
+  smtpSecure boolean [default: false]
+  smtpUser varchar
+  smtpPass varchar
+  contactEmail varchar
+  createdAt timestamp [default: `now()`]
+  updatedAt timestamp
+}

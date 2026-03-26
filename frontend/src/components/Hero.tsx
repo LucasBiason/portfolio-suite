@@ -99,14 +99,12 @@ export const Hero = memo(() => {
             >
               Histórico Profissional
             </Link>
-            {/* Stacks temporariamente oculto
             <Link
               to="/stacks"
               className="inline-flex items-center justify-center rounded-full bg-primary min-w-[220px] px-6 py-3 font-header text-sm font-bold uppercase tracking-[0.2em] text-white text-center transition-colors hover:bg-primary-dark"
             >
               Stacks & Ferramentas
             </Link>
-            */}
           </div>
         </div>
       </div>

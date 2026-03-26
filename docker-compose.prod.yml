@@ -38,8 +38,6 @@ services:
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=
-        - VITE_DEFAULT_EMAIL=lucas.biason@foxcodesoftware.com
-        - VITE_DEFAULT_PASSWORD=Portfolio2025Secure!
     container_name: portfolio-frontend
     expose:
       - "80"
@@ -99,7 +97,7 @@ services:
     environment:
       POSTGRES_DB: portfolio
       POSTGRES_USER: portfolio
-      POSTGRES_PASSWORD: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:

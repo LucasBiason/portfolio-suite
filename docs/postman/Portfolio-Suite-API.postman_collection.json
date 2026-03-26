@@ -1,0 +1,1536 @@
+{
+  "info": {
+    "_postman_id": "portfolio-suite-api-v1",
+    "name": "Portfolio Suite API",
+    "description": "# Portfolio Suite API\n\n## Overview\nComplete API documentation for the Portfolio Suite backend. All endpoints are grouped by domain.\n\n## Authentication\nProtected routes require a Bearer token in the `Authorization` header.\nRun **Auth > Login** first — the test script saves the token to `{{token}}` automatically.\n\n## Base URL\n`{{base_url}}` defaults to `http://localhost:3001`\n\n## Domains\n- **Auth** — Login and registration\n- **Profile** — Profile and about section management\n- **Projects** — Portfolio projects (public + admin)\n- **Career** — Work experience entries\n- **Stacks** — Technology stacks\n- **Categories** — Stack categories\n- **Domains** — Business domains\n- **Services** — Offered services\n- **Contacts** — Contact information and contact form\n- **Education** — Education entries\n- **Settings** — Application settings and SMTP\n- **Stats** — Public statistics\n- **Assets** — File upload and management\n- **User** — User profile endpoints\n- **About** — About page data",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.environment.get('token')) {",
+          "  pm.request.headers.upsert({",
+          "    key: 'Authorization',",
+          "    value: 'Bearer ' + pm.environment.get('token')",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login successful', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "  pm.environment.set('token', res.token);",
+                  "  console.log('Token saved to environment variable {{token}}');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "## Login\n\nAuthenticates the user and returns a JWT token.\n\n### Validations\n- `email` (string, required): Valid email address\n- `password` (string, required): User password\n\n### Rules\n- Credentials must be valid\n- Returns a signed JWT token\n- Token must be sent as `Authorization: Bearer <token>` on protected routes\n\n### Test Script\nAutomatically saves the returned `token` to the `{{token}}` environment variable.\n\n### Errors\n- 400: Missing or invalid fields\n- 401: Invalid credentials"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@portfolio.com\",\n  \"password\": \"mypassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbHVpZDEiLCJpYXQiOjE3MDAwMDAwMDB9.signature\"\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@portfolio.com\",\n  \"password\": \"wrongpassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Invalid credentials\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register (dev only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Lucas Biason\",\n  \"email\": \"admin@portfolio.com\",\n  \"password\": \"mypassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "## Register\n\nCreates a new user account. **Available in development environment only.**\n\n### Validations\n- `displayName` (string, required): User display name\n- `email` (string, required): Valid email address (must be unique)\n- `password` (string, required): Password\n\n### Errors\n- 400: Missing fields or email already taken\n- 403: Not available in production"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"displayName\": \"Lucas Biason\",\n  \"email\": \"admin@portfolio.com\",\n  \"password\": \"mypassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/register",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "auth", "register"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"cluid1\",\n  \"displayName\": \"Lucas Biason\",\n  \"email\": \"admin@portfolio.com\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "## Get Profile\n\nReturns the authenticated user's profile data including bio, title, highlights, and social links.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Missing or invalid token"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "profile"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"cluid1\",\n  \"displayName\": \"Lucas Biason\",\n  \"title\": \"Senior Backend Developer\",\n  \"bio\": \"Passionate about clean code and scalable systems.\",\n  \"email\": \"admin@portfolio.com\"\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "status": "Unauthorized",
+              "code": 401,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "profile"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Unauthorized\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Lucas Biason\",\n  \"title\": \"Senior Backend Developer\",\n  \"bio\": \"Passionate about clean code and scalable systems.\",\n  \"highlights\": [\"Python\", \"FastAPI\", \"Node.js\"],\n  \"avatarUrl\": \"https://example.com/avatar.jpg\",\n  \"contactText\": \"Feel free to reach out!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "## Update Profile\n\nUpdates the authenticated user's profile.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `displayName` (string): Display name\n- `title` (string): Professional title\n- `bio` (string): Short bio\n- `highlights` (array of strings): Key skills or highlights\n- `avatarUrl` (string): URL to avatar image\n- `contactText` (string): Contact section introductory text\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Get About Section",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile/about",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile", "about"]
+            },
+            "description": "## Get About Section\n\nReturns the about section content for the authenticated user.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "List Projects (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/projects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects"],
+              "query": [
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "description": "Filter featured projects only (boolean)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "## List Projects (Public)\n\nReturns all published projects. No authentication required.\n\n### Query Parameters\n- `featured` (boolean, optional): Filter to show only featured projects"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/projects",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "projects"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": \"cluid1\",\n    \"title\": \"Portfolio Suite\",\n    \"slug\": \"portfolio-suite\",\n    \"description\": \"Full-stack portfolio management system.\",\n    \"stacks\": [\"Node.js\", \"React\", \"PostgreSQL\"],\n    \"featured\": true,\n    \"order\": 1\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List Projects (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/projects/admin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects", "admin"],
+              "query": [
+                { "key": "search", "value": "", "description": "Search term (title, description)", "disabled": true },
+                { "key": "categories", "value": "", "description": "Comma-separated category IDs", "disabled": true },
+                { "key": "stacks", "value": "", "description": "Comma-separated stack IDs", "disabled": true },
+                { "key": "page", "value": "1", "description": "Page number (default: 1)", "disabled": true },
+                { "key": "pageSize", "value": "10", "description": "Items per page (default: 10)", "disabled": true },
+                { "key": "sortBy", "value": "order", "description": "Sort field: order, title, createdAt", "disabled": true },
+                { "key": "sortDir", "value": "asc", "description": "Sort direction: asc | desc", "disabled": true }
+              ]
+            },
+            "description": "## List Projects (Admin)\n\nReturns all projects with full data for admin management.\n\n### Auth\nRequires Bearer token.\n\n### Query Parameters\n- `search` (string, optional): Search in title and description\n- `categories` (string, optional): Comma-separated category IDs\n- `stacks` (string, optional): Comma-separated stack IDs\n- `page` (number, optional): Page number, default 1\n- `pageSize` (number, optional): Items per page, default 10\n- `sortBy` (string, optional): Field to sort by — `order`, `title`, `createdAt`\n- `sortDir` (string, optional): `asc` or `desc`\n\n### Errors\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Portfolio Suite\",\n  \"slug\": \"portfolio-suite\",\n  \"description\": \"Full-stack portfolio management system.\",\n  \"longDescription\": \"A complete solution for managing portfolio content including projects, career, stacks, and more.\",\n  \"repoUrl\": \"https://github.com/user/portfolio-suite\",\n  \"liveUrl\": \"https://portfolio.example.com\",\n  \"thumbnailUrl\": \"https://example.com/thumb.jpg\",\n  \"featured\": true,\n  \"stackIds\": [\"cluid-stack1\", \"cluid-stack2\"],\n  \"categoryIds\": [\"cluid-cat1\"],\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/projects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects"]
+            },
+            "description": "## Create Project\n\nCreates a new portfolio project.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `title` (string, required): Project title\n- `slug` (string, required): URL slug (unique)\n- `description` (string, required): Short description\n- `longDescription` (string, optional): Full description\n- `repoUrl` (string, optional): Repository URL\n- `liveUrl` (string, optional): Live demo URL\n- `thumbnailUrl` (string, optional): Thumbnail image URL\n- `featured` (boolean, optional): Mark as featured\n- `stackIds` (array, optional): Array of stack IDs\n- `categoryIds` (array, optional): Array of category IDs\n- `order` (number, optional): Display order\n\n### Errors\n- 400: Validation error or slug already taken\n- 401: Unauthorized"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Portfolio Suite\",\n  \"slug\": \"portfolio-suite\",\n  \"description\": \"Full-stack portfolio management system.\",\n  \"featured\": true,\n  \"order\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/projects",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "projects"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"cluid1\",\n  \"title\": \"Portfolio Suite\",\n  \"slug\": \"portfolio-suite\",\n  \"description\": \"Full-stack portfolio management system.\",\n  \"featured\": true,\n  \"order\": 1,\n  \"createdAt\": \"2026-03-26T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Portfolio Suite v2\",\n  \"description\": \"Updated description.\",\n  \"featured\": true,\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/projects/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Project ID" }
+              ]
+            },
+            "description": "## Update Project\n\nUpdates an existing project by ID.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Project ID\n\n### Body\nSame fields as Create Project — all optional.\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized\n- 404: Project not found"
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/projects/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Project ID" }
+              ]
+            },
+            "description": "## Delete Project\n\nPermanently deletes a project by ID.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Project ID\n\n### Errors\n- 401: Unauthorized\n- 404: Project not found"
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/projects/:id",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "projects", ":id"],
+                  "variable": [{ "key": "id", "value": "cluid1" }]
+                }
+              },
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Career",
+      "item": [
+        {
+          "name": "List Career (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/career",
+              "host": ["{{base_url}}"],
+              "path": ["api", "career"]
+            },
+            "description": "## List Career (Public)\n\nReturns published career/work experience entries. No authentication required."
+          }
+        },
+        {
+          "name": "List Career (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/career/admin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "career", "admin"],
+              "query": [
+                { "key": "search", "value": "", "description": "Search in company or role", "disabled": true },
+                { "key": "domains", "value": "", "description": "Comma-separated domain IDs", "disabled": true },
+                { "key": "contractType", "value": "", "description": "Contract type: CLT | PJ | FREELANCE", "disabled": true },
+                { "key": "page", "value": "1", "description": "Page number", "disabled": true },
+                { "key": "pageSize", "value": "10", "description": "Items per page", "disabled": true },
+                { "key": "sortBy", "value": "order", "description": "Sort field", "disabled": true },
+                { "key": "sortDir", "value": "asc", "description": "asc | desc", "disabled": true }
+              ]
+            },
+            "description": "## List Career (Admin)\n\nReturns all career entries with full data for admin management.\n\n### Auth\nRequires Bearer token.\n\n### Query Parameters\n- `search` (string, optional): Search in company name or role\n- `domains` (string, optional): Comma-separated domain IDs\n- `contractType` (string, optional): `CLT`, `PJ`, or `FREELANCE`\n- `page` (number, optional): Page number\n- `pageSize` (number, optional): Items per page\n- `sortBy` / `sortDir`: Sort configuration"
+          }
+        },
+        {
+          "name": "Create Career Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Acme Corp\",\n  \"role\": \"Senior Backend Developer\",\n  \"contractType\": \"CLT\",\n  \"startDate\": \"2022-01-01\",\n  \"endDate\": null,\n  \"summary\": \"Led backend architecture for payment systems.\",\n  \"actions\": [\n    \"Redesigned payment service reducing latency by 40%\",\n    \"Migrated legacy monolith to microservices\"\n  ],\n  \"projectTypes\": [\"Payment Systems\", \"APIs\"],\n  \"stackIds\": [\"cluid-stack1\"],\n  \"domainIds\": [\"cluid-domain1\"],\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/career",
+              "host": ["{{base_url}}"],
+              "path": ["api", "career"]
+            },
+            "description": "## Create Career Entry\n\nCreates a new work experience entry.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `company` (string, required): Company name\n- `role` (string, required): Job title / role\n- `contractType` (string, required): `CLT`, `PJ`, or `FREELANCE`\n- `startDate` (string, required): ISO date (YYYY-MM-DD)\n- `endDate` (string, optional): ISO date or null if current\n- `summary` (string, required): Short summary of responsibilities\n- `actions` (array of strings, optional): Key achievements or actions\n- `projectTypes` (array of strings, optional): Types of projects worked on\n- `stackIds` (array of strings, optional): Related stack IDs\n- `domainIds` (array of strings, optional): Related domain IDs\n- `order` (number, optional): Display order\n\n### Choices: contractType\n- `CLT`: Brazilian employment contract\n- `PJ`: Legal entity / contractor\n- `FREELANCE`: Freelance engagement\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"company\": \"Acme Corp\",\n  \"role\": \"Senior Backend Developer\",\n  \"contractType\": \"CLT\",\n  \"startDate\": \"2022-01-01\",\n  \"summary\": \"Led backend architecture.\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/career",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "career"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"cluid1\",\n  \"company\": \"Acme Corp\",\n  \"role\": \"Senior Backend Developer\",\n  \"contractType\": \"CLT\",\n  \"startDate\": \"2022-01-01T00:00:00.000Z\",\n  \"endDate\": null,\n  \"order\": 1,\n  \"createdAt\": \"2026-03-26T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Career Entry",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Lead Backend Engineer\",\n  \"summary\": \"Updated summary.\",\n  \"endDate\": \"2024-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/career/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "career", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Career entry ID" }
+              ]
+            },
+            "description": "## Update Career Entry\n\nUpdates an existing career entry by ID.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Career entry ID\n\n### Body\nSame fields as Create — all optional.\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized\n- 404: Entry not found"
+          }
+        },
+        {
+          "name": "Delete Career Entry",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/career/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "career", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Career entry ID" }
+              ]
+            },
+            "description": "## Delete Career Entry\n\nPermanently deletes a career entry.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Career entry ID\n\n### Errors\n- 401: Unauthorized\n- 404: Entry not found"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stacks",
+      "item": [
+        {
+          "name": "List Stacks (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stacks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stacks"]
+            },
+            "description": "## List Stacks (Public)\n\nReturns all technology stacks. No authentication required."
+          }
+        },
+        {
+          "name": "List Stacks (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stacks/admin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stacks", "admin"],
+              "query": [
+                { "key": "search", "value": "", "description": "Search by stack name", "disabled": true },
+                { "key": "category", "value": "", "description": "Category ID filter", "disabled": true },
+                { "key": "level", "value": "", "description": "Proficiency level: BASIC | INTERMEDIATE | ADVANCED | EXPERT", "disabled": true },
+                { "key": "page", "value": "1", "description": "Page number", "disabled": true },
+                { "key": "pageSize", "value": "10", "description": "Items per page", "disabled": true },
+                { "key": "sortBy", "value": "order", "description": "Sort field", "disabled": true },
+                { "key": "sortDir", "value": "asc", "description": "asc | desc", "disabled": true }
+              ]
+            },
+            "description": "## List Stacks (Admin)\n\nReturns all stacks with full data for admin management.\n\n### Auth\nRequires Bearer token.\n\n### Query Parameters\n- `search` (string, optional): Search by name\n- `category` (string, optional): Category ID\n- `level` (string, optional): `BASIC`, `INTERMEDIATE`, `ADVANCED`, `EXPERT`\n- `page`, `pageSize`, `sortBy`, `sortDir`: Pagination and sorting"
+          }
+        },
+        {
+          "name": "Create Stack",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"FastAPI\",\n  \"categoryId\": \"cluid-cat1\",\n  \"startYear\": 2021,\n  \"endYear\": null,\n  \"level\": \"EXPERT\",\n  \"icon\": \"fastapi\",\n  \"profProjects\": [\"Portfolio Suite\", \"ExpenseIQ\"],\n  \"personalProjects\": [\"CLI Tool\"],\n  \"solutions\": [\"REST APIs\", \"Microservices\"],\n  \"patterns\": [\"Repository Pattern\", \"Clean Architecture\"],\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/stacks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stacks"]
+            },
+            "description": "## Create Stack\n\nCreates a new technology stack entry.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `name` (string, required): Stack name (unique)\n- `categoryId` (string, required): Parent category ID\n- `startYear` (number, required): Year started using\n- `endYear` (number, optional): Year stopped using (null if still active)\n- `level` (string, required): Proficiency level\n- `icon` (string, optional): Icon identifier or URL\n- `profProjects` (array of strings, optional): Professional project names\n- `personalProjects` (array of strings, optional): Personal project names\n- `solutions` (array of strings, optional): Solutions/areas of application\n- `patterns` (array of strings, optional): Design patterns used\n- `order` (number, optional): Display order\n\n### Choices: level\n- `BASIC`\n- `INTERMEDIATE`\n- `ADVANCED`\n- `EXPERT`\n\n### Errors\n- 400: Validation error or name already taken\n- 401: Unauthorized\n- 404: Category not found"
+          }
+        },
+        {
+          "name": "Update Stack",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"level\": \"EXPERT\",\n  \"order\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/stacks/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stacks", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Stack ID" }
+              ]
+            },
+            "description": "## Update Stack\n\nUpdates an existing stack by ID.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Stack ID\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized\n- 404: Stack not found"
+          }
+        },
+        {
+          "name": "Delete Stack",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stacks/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stacks", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Stack ID" }
+              ]
+            },
+            "description": "## Delete Stack\n\nPermanently deletes a stack by ID.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Unauthorized\n- 404: Stack not found"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories"]
+            },
+            "description": "## List Categories (Public)\n\nReturns all stack categories. No authentication required."
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend\",\n  \"slug\": \"backend\",\n  \"icon\": \"server\",\n  \"color\": \"#3B82F6\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories"]
+            },
+            "description": "## Create Category\n\nCreates a new stack category.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `name` (string, required): Category name\n- `slug` (string, required): URL slug (unique)\n- `icon` (string, optional): Icon identifier\n- `color` (string, optional): Hex color code\n- `order` (number, optional): Display order\n\n### Errors\n- 400: Validation error or slug already taken\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend Development\",\n  \"color\": \"#2563EB\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/categories/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Category ID" }
+              ]
+            },
+            "description": "## Update Category\n\nUpdates an existing category.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Category ID\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized\n- 404: Category not found"
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/categories/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Category ID" }
+              ]
+            },
+            "description": "## Delete Category\n\nPermanently deletes a category. Fails if stacks are still associated.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Unauthorized\n- 404: Category not found\n- 409: Category has associated stacks"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Domains",
+      "item": [
+        {
+          "name": "List Domains (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/domains",
+              "host": ["{{base_url}}"],
+              "path": ["api", "domains"]
+            },
+            "description": "## List Domains (Public)\n\nReturns all business domains. No authentication required."
+          }
+        },
+        {
+          "name": "Create Domain",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Fintech\",\n  \"slug\": \"fintech\",\n  \"description\": \"Financial technology products and services.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/domains",
+              "host": ["{{base_url}}"],
+              "path": ["api", "domains"]
+            },
+            "description": "## Create Domain\n\nCreates a new business domain.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `name` (string, required): Domain name\n- `slug` (string, optional): URL slug\n- `description` (string, optional): Description\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Update Domain",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Financial Technology\",\n  \"description\": \"Updated description.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/domains/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "domains", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Domain ID" }
+              ]
+            },
+            "description": "## Update Domain\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Domain ID"
+          }
+        },
+        {
+          "name": "Delete Domain",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/domains/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "domains", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Domain ID" }
+              ]
+            },
+            "description": "## Delete Domain\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Domain ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "item": [
+        {
+          "name": "List Services (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/services",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services"]
+            },
+            "description": "## List Services (Public)\n\nReturns all published offered services. No authentication required."
+          }
+        },
+        {
+          "name": "List Services (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/services/admin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services", "admin"]
+            },
+            "description": "## List Services (Admin)\n\nReturns all services including unpublished ones.\n\n### Auth\nRequires Bearer token."
+          }
+        },
+        {
+          "name": "Create Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Backend Development\",\n  \"description\": \"Build scalable REST APIs and microservices.\",\n  \"icon\": \"server\",\n  \"published\": true,\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/services",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services"]
+            },
+            "description": "## Create Service\n\nCreates a new offered service.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `title` (string, required): Service title\n- `description` (string, required): Service description\n- `icon` (string, optional): Icon identifier\n- `published` (boolean, optional): Visibility on public site\n- `order` (number, optional): Display order\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Update Service",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"API Development\",\n  \"published\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/services/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Service ID" }
+              ]
+            },
+            "description": "## Update Service\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Service ID"
+          }
+        },
+        {
+          "name": "Delete Service",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/services/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Service ID" }
+              ]
+            },
+            "description": "## Delete Service\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Service ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "List Contact Info (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contact/info",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "info"]
+            },
+            "description": "## List Contact Info (Public)\n\nReturns all published contact cards (email, phone, social links). No authentication required."
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/contact/info",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "contact", "info"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": \"cluid1\",\n    \"label\": \"Email\",\n    \"value\": \"lucas@example.com\",\n    \"icon\": \"mail\",\n    \"href\": \"mailto:lucas@example.com\",\n    \"order\": 1\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "List Contact Info (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/contact/admin/list",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "admin", "list"]
+            },
+            "description": "## List Contact Info (Admin)\n\nReturns all contact entries including unpublished ones.\n\n### Auth\nRequires Bearer token."
+          }
+        },
+        {
+          "name": "Send Contact Message (public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"message\": \"Hi, I'd like to discuss a project opportunity.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contact",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact"]
+            },
+            "description": "## Send Contact Message (Public)\n\nSends a contact form email via configured SMTP. No authentication required.\n\n### Body Fields\n- `name` (string, required): Sender name\n- `email` (string, required): Sender email address\n- `message` (string, required): Message content\n\n### Rules\n- Email is sent to the configured portfolio owner address\n- SMTP must be configured in Settings\n\n### Errors\n- 400: Missing or invalid fields\n- 500: SMTP delivery failure"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"message\": \"Hello!\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/contact",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "contact"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Message sent successfully\"\n}"
+            },
+            {
+              "name": "400 Validation Error",
+              "status": "Bad Request",
+              "code": 400,
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/contact",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "contact"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"email and message are required\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Contact Info",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"LinkedIn\",\n  \"value\": \"linkedin.com/in/lucasbiason\",\n  \"icon\": \"linkedin\",\n  \"href\": \"https://linkedin.com/in/lucasbiason\",\n  \"published\": true,\n  \"order\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contact/info",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "info"]
+            },
+            "description": "## Create Contact Info\n\nCreates a new contact info card.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `label` (string, required): Display label (e.g., Email, LinkedIn)\n- `value` (string, required): Display value\n- `icon` (string, optional): Icon identifier\n- `href` (string, optional): Link URL\n- `published` (boolean, optional): Visibility\n- `order` (number, optional): Display order\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Update Contact Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"linkedin.com/in/newhandle\",\n  \"href\": \"https://linkedin.com/in/newhandle\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contact/info/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "info", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Contact info entry ID" }
+              ]
+            },
+            "description": "## Update Contact Info\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Contact info entry ID"
+          }
+        },
+        {
+          "name": "Delete Contact Info",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/contact/info/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "info", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Contact info entry ID" }
+              ]
+            },
+            "description": "## Delete Contact Info\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Contact info entry ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Education",
+      "item": [
+        {
+          "name": "List Education (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/education",
+              "host": ["{{base_url}}"],
+              "path": ["api", "education"]
+            },
+            "description": "## List Education (Public)\n\nReturns all education entries. No authentication required."
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/education",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "education"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": \"cluid1\",\n    \"institution\": \"FIAP\",\n    \"degree\": \"MBA em Inteligência Artificial\",\n    \"startYear\": 2023,\n    \"endYear\": 2025,\n    \"order\": 1\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create Education",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institution\": \"FIAP\",\n  \"degree\": \"MBA em Inteligência Artificial\",\n  \"fieldOfStudy\": \"Artificial Intelligence\",\n  \"startYear\": 2023,\n  \"endYear\": 2025,\n  \"description\": \"Focus on machine learning and AI applications.\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/education",
+              "host": ["{{base_url}}"],
+              "path": ["api", "education"]
+            },
+            "description": "## Create Education\n\nCreates a new education entry.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `institution` (string, required): Institution name\n- `degree` (string, required): Degree or certification name\n- `fieldOfStudy` (string, optional): Field of study\n- `startYear` (number, required): Year started\n- `endYear` (number, optional): Year completed (null if in progress)\n- `description` (string, optional): Additional description\n- `order` (number, optional): Display order\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Update Education",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endYear\": 2025,\n  \"description\": \"Updated description.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/education/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "education", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Education entry ID" }
+              ]
+            },
+            "description": "## Update Education\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Education entry ID"
+          }
+        },
+        {
+          "name": "Delete Education",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/education/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "education", ":id"],
+              "variable": [
+                { "key": "id", "value": "cluid1", "description": "Education entry ID" }
+              ]
+            },
+            "description": "## Delete Education\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `id` (string, required): Education entry ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get Public Settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/settings/public",
+              "host": ["{{base_url}}"],
+              "path": ["api", "settings", "public"]
+            },
+            "description": "## Get Public Settings\n\nReturns non-sensitive public application settings (site title, meta, theme). No authentication required."
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/settings/public",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "settings", "public"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"siteTitle\": \"Lucas Biason - Portfolio\",\n  \"metaDescription\": \"Senior Backend Developer portfolio.\",\n  \"primaryColor\": \"#3B82F6\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "settings"]
+            },
+            "description": "## Get All Settings\n\nReturns all application settings including SMTP configuration.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siteTitle\": \"Lucas Biason - Portfolio\",\n  \"metaDescription\": \"Senior Backend Developer.\",\n  \"primaryColor\": \"#3B82F6\",\n  \"smtpHost\": \"smtp.gmail.com\",\n  \"smtpPort\": 587,\n  \"smtpUser\": \"noreply@example.com\",\n  \"smtpPassword\": \"app-password\",\n  \"smtpFrom\": \"noreply@example.com\",\n  \"contactEmail\": \"lucas@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "settings"]
+            },
+            "description": "## Update Settings\n\nUpdates application settings including SMTP configuration.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `siteTitle` (string, optional): Site title for meta/SEO\n- `metaDescription` (string, optional): Meta description\n- `primaryColor` (string, optional): Primary brand color (hex)\n- `smtpHost` (string, optional): SMTP server hostname\n- `smtpPort` (number, optional): SMTP port (25, 465, 587)\n- `smtpUser` (string, optional): SMTP authentication username\n- `smtpPassword` (string, optional): SMTP authentication password\n- `smtpFrom` (string, optional): From email address\n- `contactEmail` (string, optional): Destination for contact form messages\n\n### Errors\n- 400: Validation error\n- 401: Unauthorized"
+          }
+        },
+        {
+          "name": "Test Email (SMTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"lucas@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/settings/test-email",
+              "host": ["{{base_url}}"],
+              "path": ["api", "settings", "test-email"]
+            },
+            "description": "## Test Email (SMTP)\n\nSends a test email using the currently configured SMTP settings.\n\n### Auth\nRequires Bearer token.\n\n### Body Fields\n- `to` (string, required): Destination email address for the test\n\n### Rules\n- SMTP must be configured before testing\n- Sends a simple test message to verify configuration\n\n### Errors\n- 400: Missing `to` field\n- 401: Unauthorized\n- 500: SMTP connection or delivery failure"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": { "mode": "raw", "raw": "{\n  \"to\": \"lucas@example.com\"\n}" },
+                "url": {
+                  "raw": "{{base_url}}/api/settings/test-email",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "settings", "test-email"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Test email sent successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "item": [
+        {
+          "name": "Get Public Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/stats/public",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stats", "public"]
+            },
+            "description": "## Get Public Stats\n\nReturns aggregated public statistics about the portfolio (project count, years of experience, stacks count, etc.). No authentication required."
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/stats/public",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "stats", "public"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"projectsCount\": 12,\n  \"stacksCount\": 28,\n  \"yearsOfExperience\": 7,\n  \"companiesCount\": 5\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Assets",
+      "item": [
+        {
+          "name": "Upload Asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "File to upload (image, document, etc.)"
+                },
+                {
+                  "key": "tag",
+                  "value": "avatar",
+                  "type": "text",
+                  "description": "Tag identifier for the asset (string, required)"
+                },
+                {
+                  "key": "description",
+                  "value": "Profile avatar image",
+                  "type": "text",
+                  "description": "Human-readable description (string, optional)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/assets/upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "assets", "upload"]
+            },
+            "description": "## Upload Asset\n\nUploads a file and associates it with a tag for later retrieval.\n\n### Auth\nRequires Bearer token.\n\n### Body (multipart/form-data)\n- `file` (file, required): The file to upload\n- `tag` (string, required): Unique tag identifier (used to retrieve/delete asset)\n- `description` (string, optional): Description of the asset\n\n### Rules\n- If a tag already exists, the previous file may be replaced\n- Supported formats depend on server configuration\n\n### Errors\n- 400: Missing file or tag\n- 401: Unauthorized\n- 413: File too large"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "file", "type": "file" },
+                    { "key": "tag", "value": "avatar", "type": "text" }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/assets/upload",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "assets", "upload"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"cluid1\",\n  \"tag\": \"avatar\",\n  \"url\": \"https://example.com/uploads/avatar-1234.jpg\",\n  \"mimeType\": \"image/jpeg\",\n  \"size\": 204800,\n  \"createdAt\": \"2026-03-26T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Assets",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assets",
+              "host": ["{{base_url}}"],
+              "path": ["api", "assets"]
+            },
+            "description": "## List Assets\n\nReturns all uploaded assets.\n\n### Auth\nRequires Bearer token."
+          }
+        },
+        {
+          "name": "Get Asset by Tag",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assets/:tag",
+              "host": ["{{base_url}}"],
+              "path": ["api", "assets", ":tag"],
+              "variable": [
+                { "key": "tag", "value": "avatar", "description": "Asset tag identifier" }
+              ]
+            },
+            "description": "## Get Asset by Tag\n\nReturns asset metadata for a given tag.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `tag` (string, required): The tag used when uploading\n\n### Errors\n- 401: Unauthorized\n- 404: Asset not found"
+          }
+        },
+        {
+          "name": "Delete Asset",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assets/:tag",
+              "host": ["{{base_url}}"],
+              "path": ["api", "assets", ":tag"],
+              "variable": [
+                { "key": "tag", "value": "avatar", "description": "Asset tag identifier" }
+              ]
+            },
+            "description": "## Delete Asset\n\nDeletes an asset and its associated file by tag.\n\n### Auth\nRequires Bearer token.\n\n### Path Parameters\n- `tag` (string, required): The tag used when uploading\n\n### Errors\n- 401: Unauthorized\n- 404: Asset not found"
+          }
+        }
+      ]
+    },
+    {
+      "name": "About",
+      "item": [
+        {
+          "name": "Get About (public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/about",
+              "host": ["{{base_url}}"],
+              "path": ["api", "about"]
+            },
+            "description": "## Get About (Public)\n\nReturns the complete about page data for the public frontend. No authentication required.\n\nIncludes bio text, highlights, avatar, and supporting content."
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/about",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "about"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"bio\": \"Passionate backend developer with 7+ years of experience.\",\n  \"highlights\": [\"Python\", \"Node.js\", \"FastAPI\", \"PostgreSQL\"],\n  \"avatarUrl\": \"https://example.com/uploads/avatar.jpg\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get About Me (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/about/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "about", "me"]
+            },
+            "description": "## Get About Me (Admin)\n\nReturns the full about data for the authenticated admin user, including editable fields.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get Public User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user"]
+            },
+            "description": "## Get Public User Profile\n\nReturns the default portfolio user's public profile data. Used by the frontend to render the homepage.\n\nThe default user is determined by `PORTFOLIO_DEFAULT_EMAIL` environment variable.\n\nNo authentication required."
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/user",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "user"]
+                }
+              },
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"displayName\": \"Lucas Biason\",\n  \"title\": \"Senior Backend Developer\",\n  \"bio\": \"Passionate about clean code and scalable systems.\",\n  \"avatarUrl\": \"https://example.com/uploads/avatar.jpg\",\n  \"projects\": [],\n  \"career\": [],\n  \"stacks\": [],\n  \"services\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Auth User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "me"]
+            },
+            "description": "## Get Auth User Profile\n\nReturns the full profile of the currently authenticated user, including private fields.\n\n### Auth\nRequires Bearer token.\n\n### Errors\n- 401: Unauthorized"
+          }
+        }
+      ]
+    }
+  ]
+}

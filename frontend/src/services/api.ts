@@ -55,80 +55,24 @@ export const clearAuthToken = (): void => {
   }
 }
 
-// Auto-login on first load
-let loginPromise: Promise<string> | null = null
-
-const autoLogin = async (): Promise<string> => {
-  if (loginPromise) return loginPromise
-
-  loginPromise = (async () => {
-    const apiBase = getApiBase()
-    const email = import.meta.env.VITE_DEFAULT_EMAIL || 'lucas.biason@foxcodesoftware.com'
-    const password = import.meta.env.VITE_DEFAULT_PASSWORD || 'Portfolio2025Secure!'
-
-    try {
-      const response = await fetch(`${apiBase}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include', // Include cookies
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Login failed:', response.status, errorText)
-        throw new Error(`Login failed: ${response.status} ${errorText}`)
-      }
-
-      const data = await response.json()
-      const token = data.token || data.accessToken
-      if (token) {
-        setAuthToken(token)
-        return token
-      }
-      throw new Error('No token received')
-    } catch (error) {
-      console.error('Auto-login failed:', error)
-      // Don't throw - allow requests to continue (they'll get 401 and show error)
-      throw error
-    }
-  })()
-
-  return loginPromise
-}
-
 const getAuthHeaders = async (): Promise<HeadersInit> => {
-  let token = getAuthToken()
-  if (!token) {
-    try {
-      token = await autoLogin()
-    } catch {
-      // If auto-login fails, continue without token (will fail with 401)
-    }
-  }
-
+  const token = getAuthToken()
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   }
-
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
   }
-
   return headers
 }
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {
-    // If 401, try to re-login once
     if (response.status === 401) {
       clearAuthToken()
-      const token = await autoLogin()
-      if (token) {
-        // Retry the request (caller should handle this)
-        throw new Error('RETRY_AUTH')
+      // Redirecionar para login se não autenticado
+      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+        window.location.href = '/admin/login'
       }
     }
     const message = await response.text()

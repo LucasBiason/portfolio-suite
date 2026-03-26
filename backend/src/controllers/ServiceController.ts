@@ -34,7 +34,7 @@ export class ServiceController {
   };
 
   /**
-   * Lists services for the authenticated user.
+   * Lists services for the authenticated user with server-side filtering and pagination.
    */
   listAdmin = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
@@ -47,6 +47,9 @@ export class ServiceController {
     return res.json(result);
   };
 
+  /**
+   * Lists services for the authenticated user.
+   */
   list = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Unauthorized.' });
@@ -56,7 +59,7 @@ export class ServiceController {
   };
 
   /**
-   * Registers a new service.
+   * Creates a new service linked to the authenticated user.
    */
   create = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) {

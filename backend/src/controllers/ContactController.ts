@@ -82,6 +82,9 @@ export class ContactController {
     return res.json(payload);
   };
 
+  /**
+   * Lists contact cards for the authenticated user with server-side filtering and pagination.
+   */
   listAdminFiltered = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
     const search = typeof req.query.search === 'string' ? req.query.search : undefined;
@@ -94,6 +97,9 @@ export class ContactController {
     return res.json(result);
   };
 
+  /**
+   * Creates a new contact card linked to the authenticated user.
+   */
   create = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Unauthorized.' });

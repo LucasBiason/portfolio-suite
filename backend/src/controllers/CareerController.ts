@@ -1,9 +1,17 @@
+/**
+ * Controller for career entry endpoints.
+ * Provides public listing and authenticated admin CRUD operations.
+ */
 import type { Request, Response } from 'express';
 import { CareerRepository } from '../repositories/CareerRepository';
 import { createCareerSchema, updateCareerSchema } from '../schemas/careerSchemas';
 import { prisma } from '../config/prisma';
 import { appEnv } from '../config/env';
 
+/**
+ * Handles CRUD operations for career entries.
+ * Provides public listing and authenticated admin endpoints.
+ */
 export class CareerController {
   private readonly careerRepository = new CareerRepository();
 

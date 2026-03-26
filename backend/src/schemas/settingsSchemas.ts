@@ -1,7 +1,12 @@
+/**
+ * Zod schemas for site settings request validation.
+ */
 import { z } from 'zod';
 
-const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Cor hexadecimal inválida');
+/** Validates a CSS hex color string in the format #RRGGBB. */
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color');
 
+/** Validates the body of an update settings request (all fields optional). */
 export const updateSettingsSchema = z.object({
   primaryColor: hexColor.optional(),
   primaryDarkColor: hexColor.optional(),

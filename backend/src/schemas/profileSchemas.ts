@@ -1,5 +1,9 @@
+/**
+ * Zod schemas for profile request validation.
+ */
 import { z } from 'zod';
 
+/** Validates the body of an update profile request (all fields optional). */
 export const updateProfileSchema = z.object({
   displayName: z.string().min(2).optional(),
   email: z.string().email().optional(),

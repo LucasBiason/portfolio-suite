@@ -1,5 +1,9 @@
+/**
+ * Zod schemas for technology stack request validation.
+ */
 import { z } from 'zod';
 
+/** Validates the body of a create stack entry request. */
 export const createStackSchema = z.object({
   name: z.string().min(1),
   categoryId: z.string().min(1),
@@ -14,4 +18,5 @@ export const createStackSchema = z.object({
   order: z.number().int().optional(),
 });
 
+/** Validates the body of an update stack entry request (all fields optional). */
 export const updateStackSchema = createStackSchema.partial();

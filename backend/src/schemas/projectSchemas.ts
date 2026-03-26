@@ -1,11 +1,16 @@
+/**
+ * Zod schemas for project request validation.
+ */
 import { z } from 'zod';
 
+/** Validates a single project image entry. */
 const imageSchema = z.object({
   url: z.string().url(),
   alt: z.string().optional(),
   order: z.number().int().optional(),
 });
 
+/** Validates the body of a create project request. */
 export const createProjectSchema = z.object({
   title: z.string().min(2),
   description: z.string().min(2),
@@ -23,4 +28,5 @@ export const createProjectSchema = z.object({
   stackIds: z.array(z.string()).optional(),
 });
 
+/** Validates the body of an update project request (all fields optional). */
 export const updateProjectSchema = createProjectSchema.partial();

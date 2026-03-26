@@ -60,27 +60,6 @@ sequenceDiagram
     F-->>B: Renderiza página
 ```
 
-## Fluxo Público (sem autenticação)
-
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant N as nginx
-    participant F as Frontend
-    participant A as Backend API
-
-    B->>N: GET /
-    N->>F: proxy_pass :80
-    F-->>N: index.html (SPA)
-    N-->>B: HTML
-
-    B->>N: GET /api/stacks
-    N->>A: proxy_pass :3001
-    Note over A: Rota pública (sem JWT)
-    A-->>N: JSON
-    N-->>B: Dados das stacks
-```
-
 ## Componentes
 
 ### Frontend (React 19 + TypeScript + Vite)

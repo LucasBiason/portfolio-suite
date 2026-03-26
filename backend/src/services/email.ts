@@ -1,10 +1,21 @@
+/**
+ * Email service for sending contact form messages via SMTP.
+ * Configuration is loaded from the database (SiteSettings) with environment variable fallback.
+ */
 import nodemailer from 'nodemailer';
 import { prisma } from '../config/prisma';
 import { appEnv } from '../config/env';
 
+/**
+ * Escapes HTML special characters to prevent injection in email bodies.
+ *
+ * @param s - The raw string to escape
+ * @returns The HTML-safe string
+ */
 const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/** Payload for a contact form email. */
 interface ContactEmailData {
   name: string;
   email: string;
@@ -12,8 +23,10 @@ interface ContactEmailData {
 }
 
 /**
- * Busca configurações SMTP do banco (SiteSettings do usuário padrão).
- * Se não existir ou estiver vazio, usa variáveis de ambiente como fallback.
+ * Loads SMTP configuration from the database (SiteSettings of the default user).
+ * Falls back to environment variables when the database record is missing or incomplete.
+ *
+ * @returns Resolved SMTP configuration object
  */
 const getSmtpConfig = async () => {
   try {
@@ -38,10 +51,10 @@ const getSmtpConfig = async () => {
       }
     }
   } catch {
-    // Fallback to env vars
+    // Fallback to environment variables
   }
 
-  // Fallback: variáveis de ambiente
+  // Fallback: environment variables
   return {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
@@ -52,6 +65,12 @@ const getSmtpConfig = async () => {
   };
 };
 
+/**
+ * Sends a contact form email using the configured SMTP settings.
+ *
+ * @param data - The contact form payload containing name, email and message
+ * @throws Error if SMTP credentials are not configured
+ */
 export const sendContactEmail = async (data: ContactEmailData): Promise<void> => {
   const smtp = await getSmtpConfig();
 

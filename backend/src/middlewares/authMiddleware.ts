@@ -1,6 +1,18 @@
+/**
+ * Express middleware for JWT authentication.
+ * Validates the Authorization Bearer token and attaches the user ID to the request.
+ */
 import type { NextFunction, Request, Response } from 'express';
 import { verifyToken } from '../utils/jwt';
 
+/**
+ * Validates the JWT from the Authorization header and populates req.userId and req.userEmail.
+ * Returns 401 if the token is missing or invalid.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Next middleware function
+ */
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): Response | void => {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {

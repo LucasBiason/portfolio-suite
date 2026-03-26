@@ -1,3 +1,7 @@
+/**
+ * Controller for portfolio statistics endpoints.
+ * Aggregates career, project, stack and service counts for the public dashboard.
+ */
 import type { Request, Response } from 'express';
 import { prisma } from '../config/prisma';
 import { appEnv } from '../config/env';
@@ -62,6 +66,9 @@ function calculateTotalYears(periods: string[]): string {
   return `${diffYears}+`;
 }
 
+/**
+ * Exposes portfolio statistics for the public dashboard.
+ */
 export class StatsController {
   /**
    * Returns portfolio statistics calculated dynamically from the database.
@@ -201,6 +208,9 @@ export class StatsController {
   };
 }
 
+/**
+ * Returns a zeroed-out stats object used as fallback when no user is found.
+ */
 function buildEmptyStats() {
   return {
     career: {

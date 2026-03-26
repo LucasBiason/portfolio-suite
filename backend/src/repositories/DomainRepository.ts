@@ -1,3 +1,6 @@
+/**
+ * Data access layer for portfolio domains.
+ */
 import { prisma } from '../config/prisma';
 import type { Domain } from '@prisma/client';
 import { reorderOnSave } from '../utils/reorder';
@@ -18,10 +21,13 @@ export type CreateDomainInput = {
   order?: number;
 };
 
-/**
- * Data access layer for portfolio domains.
- */
 export class DomainRepository {
+  /**
+   * Lists all domains for a user ordered by position.
+   *
+   * @param userId - The owner's user ID
+   * @returns Array of domains
+   */
   async listByUser(userId: string): Promise<Domain[]> {
     return prisma.domain.findMany({
       where: { userId },
@@ -29,6 +35,14 @@ export class DomainRepository {
     });
   }
 
+  /**
+   * Creates a new domain linked to the given user.
+   * Auto-generates a slug from the name when not provided.
+   *
+   * @param userId - The owner's user ID
+   * @param data - Domain data
+   * @returns The created domain
+   */
   async create(userId: string, data: CreateDomainInput): Promise<Domain> {
     const slug = data.slug ?? toSlug(data.name);
     await reorderOnSave('domain', 'userId', userId, data.order ?? 0);
@@ -44,6 +58,15 @@ export class DomainRepository {
     });
   }
 
+  /**
+   * Updates a domain scoped to the given user.
+   * Auto-generates a new slug when the name changes without an explicit slug.
+   *
+   * @param id - The domain ID
+   * @param userId - The owner's user ID
+   * @param data - Partial domain data
+   * @returns The updated domain, or null if not found
+   */
   async update(id: string, userId: string, data: Partial<CreateDomainInput>): Promise<Domain | null> {
     const existing = await prisma.domain.findFirst({ where: { id, userId } });
     if (!existing) {
@@ -63,6 +86,13 @@ export class DomainRepository {
     });
   }
 
+  /**
+   * Deletes a domain scoped to the given user.
+   *
+   * @param id - The domain ID
+   * @param userId - The owner's user ID
+   * @returns True if deleted, false if not found
+   */
   async delete(id: string, userId: string): Promise<boolean> {
     const existing = await prisma.domain.findFirst({ where: { id, userId } });
     if (!existing) {

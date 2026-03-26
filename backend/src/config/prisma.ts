@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 
-// Use DATABASE_URL directly from environment to avoid any loading issues
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://portfolio:portfolio@database:5432/portfolio?sslmode=disable';
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL não configurada. Defina em configs/.env ou como variável de ambiente.');
+}
 
 export const prisma = new PrismaClient({
   datasources: {

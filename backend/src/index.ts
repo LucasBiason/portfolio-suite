@@ -1,5 +1,7 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import projectsRouter from './routes/projects';
 import contactRouter from './routes/contact';
@@ -49,7 +51,7 @@ const corsOptions = {
       callback(null, true);
     } else {
       console.warn('CORS blocked origin:', origin);
-      callback(null, true); // Temporariamente permitir todas para debug
+      callback(new Error('Origem não permitida pelo CORS'), false);
     }
   },
   credentials: true,
@@ -59,19 +61,24 @@ const corsOptions = {
 };
 
 // Middlewares
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Rate limiting
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { error: 'Muitas tentativas. Tente novamente em 15 minutos.' } });
+const contactLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, message: { error: 'Muitas mensagens enviadas. Tente novamente em 15 minutos.' } });
+
 // Routes
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/auth', authRouter);
+app.use('/api/auth', authLimiter, authRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/projects', projectsRouter);
-app.use('/api/contact', contactRouter);
+app.use('/api/contact', contactLimiter, contactRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/user', userRouter);
 app.use('/api/about', aboutRouter);
@@ -86,10 +93,17 @@ app.use('/api/education', educationRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/domains', domainsRouter);
 
-// Error handling
-app.use((err: Error, req: Request, res: Response, next: any) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+// Zod validation error handler
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  if (err.name === 'ZodError') {
+    return res.status(400).json({ error: 'Dados inválidos', details: (err as any).errors });
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
+  } else {
+    console.error(err.message);
+  }
+  res.status(500).json({ error: 'Erro interno do servidor' });
 });
 
 const start = async () => {

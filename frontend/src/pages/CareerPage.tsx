@@ -224,23 +224,6 @@ export const CareerPage = memo(() => {
     return Array.from(domainMap.values()).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
   }, [career])
 
-  // Padrões arquiteturais extraídos das stacks dos career entries (dinâmico)
-  const archPatterns = useMemo(() => {
-    const stackGroups: Record<string, Set<string>> = {}
-    for (const entry of career) {
-      for (const stack of entry.stacks) {
-        if ((stack.stackDetail.category?.name ?? '').includes('Arquitetura')) {
-          if (!stackGroups[stack.stackDetail.name]) stackGroups[stack.stackDetail.name] = new Set()
-          stackGroups[stack.stackDetail.name].add(entry.company)
-        }
-      }
-    }
-    return Object.entries(stackGroups).map(([name, companies]) => ({
-      name,
-      detail: `Aplicado em ${companies.size} empresa${companies.size > 1 ? 's' : ''}`,
-    }))
-  }, [career])
-
   return (
     <div className="relative min-h-screen bg-background text-white flex flex-col">
       <PageBackground />
@@ -300,37 +283,6 @@ export const CareerPage = memo(() => {
                 </div>
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Architectural Patterns */}
-        <section className="relative mt-20 py-16 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-darker/60 via-surface/80 to-primary-dark/40" />
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-
-          <div className="container relative">
-            <div className="mx-auto max-w-4xl">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <Layers className="h-7 w-7 text-primary" />
-                <h2 className="text-center font-header text-3xl font-semibold uppercase text-primary sm:text-4xl">
-                  Padrões Arquiteturais
-                </h2>
-              </div>
-              <p className="mt-3 text-center font-body text-sm text-grey-20">
-                Padrões que já apliquei em produção
-              </p>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {archPatterns.map((p) => (
-                  <div
-                    key={p.name}
-                    className="rounded-xl border border-white/10 bg-background/70 backdrop-blur-sm p-5"
-                  >
-                    <h3 className="font-header text-lg font-semibold text-white">{p.name}</h3>
-                    <p className="mt-2 font-body text-sm text-grey-20">{p.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 

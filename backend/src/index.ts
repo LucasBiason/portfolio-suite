@@ -18,13 +18,14 @@ import statsRouter from './routes/stats';
 import categoriesRouter from './routes/categories';
 import domainsRouter from './routes/domains';
 import educationRouter from './routes/education';
-import { assetsRoot } from './utils/assets';
+import { mediaRoot } from './utils/assets';
 import { appEnv } from './config/env';
 
 const app: Express = express();
 
-app.use('/assets', express.static(assetsRoot));
-app.use('/uploads', express.static(path.resolve(__dirname, '../public/uploads')));
+// Servir arquivos de mídia (imagens de perfil, projetos, uploads)
+app.use('/assets', express.static(mediaRoot));
+app.use('/uploads', express.static(path.join(mediaRoot, 'uploads')));
 
 // CORS configuration
 const corsOptions = {

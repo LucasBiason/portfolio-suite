@@ -2,7 +2,9 @@ import multer from 'multer';
 import path from 'path';
 import { promises as fs } from 'fs';
 
-const UPLOAD_TEMP_DIR = path.resolve(__dirname, '../../public/temp');
+import { mediaRoot } from '../utils/assets';
+
+const UPLOAD_TEMP_DIR = path.join(mediaRoot, 'temp');
 
 // Ensure temp directory exists
 fs.mkdir(UPLOAD_TEMP_DIR, { recursive: true }).catch(console.error);

@@ -30,7 +30,12 @@ export const buildAssetUrl = (relative?: string | null): string | undefined => {
   return `${base}${relative}`;
 };
 
-// In production (compiled), __dirname is /app/dist/utils
-// So we need to go up to /app and then to public/assets
-export const assetsRoot = path.resolve(__dirname, '../../public/assets');
+// Media root: /media (mounted as Docker volume)
+// In dev: ../media (relative to project root)
+// In production (compiled): /media (Docker volume mount)
+export const mediaRoot = process.env.MEDIA_PATH
+  || path.resolve(__dirname, '../../../media');
+
+// Legacy: keep assetsRoot pointing to media for backwards compatibility
+export const assetsRoot = mediaRoot;
 

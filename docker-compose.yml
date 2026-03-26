@@ -14,6 +14,9 @@ services:
       - DATABASE_URL=postgresql://portfolio:portfolio@database:5432/portfolio?schema=public
       - PORT=3001
       - NODE_ENV=production
+      - MEDIA_PATH=/media
+    volumes:
+      - ./media:/media
     depends_on:
       database:
         condition: service_healthy

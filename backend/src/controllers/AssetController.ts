@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { buildAssetUrl } from '../utils/assets';
+import { buildAssetUrl, mediaRoot } from '../utils/assets';
 
-const UPLOAD_DIR = path.resolve(__dirname, '../../public/uploads');
+const UPLOAD_DIR = path.join(mediaRoot, 'uploads');
 
 /**
  * Controller for managing image upload and download by user and tag.

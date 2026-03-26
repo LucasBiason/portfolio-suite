@@ -363,7 +363,7 @@ export const AdminStacks: FC = () => {
         const expertCount = allStacks.filter((s) => s.level === 'Especialista').length
         const advancedCount = allStacks.filter((s) => s.level === 'Avançado').length
         const years = allStacks.map((s) => (s.endYear ?? currentYear) - s.startYear)
-        const avgYears = Math.round((years.reduce((a, b) => a + b, 0) / years.length) * 10) / 10
+        const maxYears = Math.max(...years, 0)
         return (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             <StatCard label="Total de stacks" value={allStacks.length} icon={Layers}
@@ -372,7 +372,7 @@ export const AdminStacks: FC = () => {
               cornerColor="from-green to-green/60" iconBg="bg-green/20" iconColor="text-green" />
             <StatCard label="Avançados" value={advancedCount} icon={Wrench}
               cornerColor="from-purple to-purple/60" iconBg="bg-purple/20" iconColor="text-purple" />
-            <StatCard label="Media de anos" value={avgYears} icon={Database}
+            <StatCard label="Máx. anos" value={`${maxYears}+`} icon={Database}
               cornerColor="from-yellow to-yellow/60" iconBg="bg-yellow/20" iconColor="text-yellow" />
           </div>
         )

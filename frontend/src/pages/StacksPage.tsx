@@ -176,7 +176,7 @@ const stackStatsDef = [
   { key: 'total', label: 'Tecnologias', icon: Layers, corner: 'from-accent to-primary', bg: 'bg-accent/20', color: 'text-accent' },
   { key: 'experts', label: 'Especialistas', icon: Code, corner: 'from-green to-green/60', bg: 'bg-green/20', color: 'text-green' },
   { key: 'advanced', label: 'Avançados', icon: Database, corner: 'from-purple to-purple/60', bg: 'bg-purple/20', color: 'text-purple' },
-  { key: 'avgYears', label: 'Media de anos', icon: Cpu, corner: 'from-yellow to-yellow/60', bg: 'bg-yellow/20', color: 'text-yellow' },
+  { key: 'maxYears', label: 'Máx. anos', icon: Cpu, corner: 'from-yellow to-yellow/60', bg: 'bg-yellow/20', color: 'text-yellow' },
 ]
 
 export const StacksPage = memo(() => {
@@ -189,7 +189,7 @@ export const StacksPage = memo(() => {
     total: String(apiStats.stacks.totalStacks),
     experts: String(apiStats.stacks.expertCount ?? 0),
     advanced: String(apiStats.stacks.advancedCount ?? 0),
-    avgYears: String(apiStats.stacks.avgYears ?? 0),
+    maxYears: `${apiStats.stacks.oldestStartYear ? new Date().getFullYear() - apiStats.stacks.oldestStartYear : 0}+`,
   }
 
   const categories = useMemo(() => {
@@ -286,7 +286,7 @@ export const StacksPage = memo(() => {
             )}
 
             {!loading && !error && (
-              <div className={`grid gap-4 ${openStackId ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
+              <div className="grid gap-4 md:grid-cols-2 items-start">
                 {filtered.map((stack) => (
                   <StackCard
                     key={stack.id}

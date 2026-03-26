@@ -90,6 +90,8 @@ services:
       - "ml-sales-frontend:host-gateway"
       - "ml-spam-api:host-gateway"
       - "ml-spam-frontend:host-gateway"
+      - "threat-modeling-frontend:host-gateway"
+      - "threat-modeling-service:host-gateway"
 
   database:
     image: postgres:16-alpine

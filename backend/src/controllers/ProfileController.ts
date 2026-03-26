@@ -38,6 +38,7 @@ export class ProfileController {
 
     return {
       name: user.displayName,
+      email: user.email,
       title: profile.title,
       subtitle: profile.subtitle,
       bio: profile.bio,
@@ -54,6 +55,11 @@ export class ProfileController {
           title: profile.sectionProjectsTitle,
           subtitle: profile.sectionProjectsSubtitle,
         },
+      },
+      contact: {
+        title: profile.contactTitle,
+        subtitle: profile.contactSubtitle,
+        description: profile.contactDescription,
       },
       footer: {
         title: profile.footerTitle ?? user.displayName,
@@ -169,7 +175,20 @@ export class ProfileController {
       return res.status(401).json({ error: 'Unauthorized.' });
     }
     const payload = updateProfileSchema.parse(req.body);
-    const profile = await this.profileRepository.update(req.userId, payload);
+
+    // Atualizar dados do User (displayName, email) se fornecidos
+    const { displayName, email, ...profileData } = payload;
+    if (displayName || email) {
+      await prisma.user.update({
+        where: { id: req.userId },
+        data: {
+          ...(displayName ? { displayName } : {}),
+          ...(email ? { email } : {}),
+        },
+      });
+    }
+
+    const profile = await this.profileRepository.update(req.userId, profileData);
     return res.json(profile);
   };
 }

@@ -36,6 +36,17 @@ export class ServiceController {
   /**
    * Lists services for the authenticated user.
    */
+  listAdmin = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.userId) return res.status(401).json({ error: 'Unauthorized.' });
+    const search = typeof req.query.search === 'string' ? req.query.search : undefined;
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 20;
+    const sortBy = typeof req.query.sortBy === 'string' ? req.query.sortBy : 'order';
+    const sortDir = req.query.sortDir === 'desc' ? 'desc' as const : 'asc' as const;
+    const result = await this.serviceRepository.listFiltered(req.userId, { search, page, pageSize, sortBy, sortDir });
+    return res.json(result);
+  };
+
   list = async (req: Request, res: Response): Promise<Response> => {
     if (!req.userId) {
       return res.status(401).json({ error: 'Unauthorized.' });

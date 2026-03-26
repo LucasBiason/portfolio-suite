@@ -2,6 +2,29 @@ import typography from '@tailwindcss/typography'
 import forms from '@tailwindcss/forms'
 import aspectRatio from '@tailwindcss/aspect-ratio'
 
+/**
+ * Nord Theme Color Palette (used in Admin Panel)
+ * https://www.nordtheme.com/docs/colors-and-palettes
+ */
+const nord = {
+  0: '#2e3440',
+  1: '#3b4252',
+  2: '#434c5e',
+  3: '#4c566a',
+  4: '#d8dee9',
+  5: '#e5e9f0',
+  6: '#eceff4',
+  7: '#8fbcbb',
+  8: '#88c0d0',
+  9: '#81a1c1',
+  10: '#5e81ac',
+  11: '#bf616a',
+  12: '#d08770',
+  13: '#ebcb8b',
+  14: '#a3be8c',
+  15: '#b48ead',
+}
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   safelist: ['active'],
@@ -20,12 +43,16 @@ export default {
       },
       colors: {
         transparent: 'transparent',
+
+        // Portfolio public colors (original theme)
+        // Dynamic theming via CSS custom properties applied by useTheme hook
         primary: '#0047AB',
         'primary-dark': '#002D6B',
         'primary-darker': '#001845',
         accent: '#30A0FF',
         'accent-soft': '#99C8FF',
         background: '#121417',
+        secondary: '#121417',
         surface: '#1A1D22',
         white: '#ffffff',
         black: '#000000',
@@ -36,6 +63,16 @@ export default {
         'grey-50': '#e3e8f0',
         'hero-gradient-from': 'rgba(0, 71, 171, 0.92)',
         'hero-gradient-to': 'rgba(0, 45, 107, 0.95)',
+
+        // Semantic colors (Aurora-inspired, work in both themes)
+        red: nord[11],
+        orange: nord[12],
+        yellow: nord[13],
+        green: nord[14],
+        purple: nord[15],
+
+        // Nord palette (for admin panel and direct access)
+        nord,
       },
       spacing: {
         13: '3.25rem',
@@ -92,4 +129,3 @@ export default {
   },
   plugins: [typography, forms, aspectRatio],
 }
-

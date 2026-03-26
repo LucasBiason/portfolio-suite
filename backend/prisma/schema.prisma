@@ -23,11 +23,17 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  profile      Profile?
-  projects     Project[]
-  experiences  Experience[]
-  services     Service[]
-  contacts     ContactInfo[]
+  profile        Profile?
+  projects       Project[]
+  experiences    Experience[]
+  services       Service[]
+  contacts       ContactInfo[]
+  careerEntries  CareerEntry[]
+  stackDetails   StackDetail[]
+  categories     Category[]
+  domains        Domain[]
+  educations     Education[]
+  siteSettings   SiteSettings?
 }
 
 model Profile {
@@ -55,8 +61,27 @@ model Profile {
   user User @relation(fields: [userId], references: [id])
 }
 
+model Category {
+  id        String            @id @default(uuid())
+  userId    String
+  name      String
+  slug      String
+  icon      String?
+  color     String?
+  order     Int               @default(0)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  user     User              @relation(fields: [userId], references: [id])
+  projects ProjectCategory[]
+  stacks   StackDetail[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+}
+
 model Project {
-  id              String   @id @default(uuid())
+  id              String              @id @default(uuid())
   userId          String
   title           String
   description     String
@@ -65,16 +90,55 @@ model Project {
   githubUrl       String?
   demoUrl         String?
   imageUrl        String?
-  category        String
-  categoryLabel   String?
-  featured        Boolean  @default(false)
-  order           Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  featured        Boolean             @default(false)
+  order           Int                 @default(0)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user       User              @relation(fields: [userId], references: [id])
+  images     ProjectImage[]
+  categories ProjectCategory[]
+  stacks     ProjectStack[]
 
   @@index([userId])
+}
+
+model ProjectCategory {
+  id         String   @id @default(uuid())
+  projectId  String
+  categoryId String
+
+  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, categoryId])
+  @@index([projectId])
+  @@index([categoryId])
+}
+
+model ProjectStack {
+  id            String @id @default(uuid())
+  projectId     String
+  stackDetailId String
+
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stackDetail StackDetail @relation(fields: [stackDetailId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, stackDetailId])
+  @@index([projectId])
+  @@index([stackDetailId])
+}
+
+model ProjectImage {
+  id        String  @id @default(uuid())
+  projectId String
+  url       String
+  alt       String?
+  order     Int     @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 model Experience {
@@ -87,6 +151,24 @@ model Experience {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  institution String
+  period      String
+  description String?
+  status      String   @default("completed")
+  tags        String[]
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
@@ -123,4 +205,136 @@ model ContactInfo {
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model SiteSettings {
+  id               String  @id @default(uuid())
+  userId           String  @unique
+  // Cores do portfolio publico
+  primaryColor     String  @default("#0047AB")
+  primaryDarkColor String  @default("#002D6B")
+  accentColor      String  @default("#30A0FF")
+  accentSoftColor  String  @default("#99C8FF")
+  backgroundColor  String  @default("#121417")
+  surfaceColor     String  @default("#1A1D22")
+  textColor        String  @default("#ffffff")
+  // Fontes
+  headerFont       String  @default("Raleway")
+  bodyFont         String  @default("Open Sans")
+  // Página de Projetos
+  projectsPageTitle    String @default("Projetos Pessoais & Formação")
+  projectsPageSubtitle String @default("")
+  projectsGithubUrl    String @default("")
+  projectsGithubLabel  String @default("Ver meu GitHub")
+  projectsGithubHint   String @default("")
+  // Página de Histórico
+  careerPageTitle      String @default("Histórico Profissional")
+  careerPageSubtitle   String @default("")
+  // Página de Stacks
+  stacksPageTitle      String @default("Stack & Ferramentas")
+  stacksPageSubtitle   String @default("")
+  // SMTP / E-mail
+  smtpHost         String  @default("")
+  smtpPort         Int     @default(587)
+  smtpSecure       Boolean @default(false)
+  smtpUser         String  @default("")
+  smtpPass         String  @default("")
+  contactEmail     String  @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Domain {
+  id        String          @id @default(uuid())
+  userId    String
+  name      String
+  slug      String
+  icon      String?
+  color     String?
+  order     Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  user    User            @relation(fields: [userId], references: [id])
+  careers CareerDomain[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+}
+
+model CareerEntry {
+  id           String         @id @default(uuid())
+  userId       String
+  company      String
+  role         String
+  contractType String         @default("CLT")
+  startDate    DateTime
+  endDate      DateTime?
+  summary      String
+  projectTypes String[]
+  actions      String[]
+  order        Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  user    User           @relation(fields: [userId], references: [id])
+  stacks  CareerStack[]
+  domains CareerDomain[]
+
+  @@index([userId])
+}
+
+model CareerDomain {
+  id            String @id @default(uuid())
+  careerEntryId String
+  domainId      String
+
+  careerEntry CareerEntry @relation(fields: [careerEntryId], references: [id], onDelete: Cascade)
+  domain      Domain      @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  @@unique([careerEntryId, domainId])
+  @@index([careerEntryId])
+  @@index([domainId])
+}
+
+model CareerStack {
+  id            String @id @default(uuid())
+  careerEntryId String
+  stackDetailId String
+
+  careerEntry CareerEntry @relation(fields: [careerEntryId], references: [id], onDelete: Cascade)
+  stackDetail StackDetail @relation(fields: [stackDetailId], references: [id], onDelete: Cascade)
+
+  @@unique([careerEntryId, stackDetailId])
+  @@index([careerEntryId])
+  @@index([stackDetailId])
+}
+
+model StackDetail {
+  id               String   @id @default(uuid())
+  userId           String
+  name             String
+  categoryId       String
+  startYear        Int
+  endYear          Int?
+  level            String
+  icon             String?
+  profProjects     String[]
+  personalProjects String[]
+  solutions        String[]
+  patterns         String[]
+  order            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id])
+  category      Category       @relation(fields: [categoryId], references: [id])
+  projects      ProjectStack[]
+  careerEntries CareerStack[]
+
+  @@index([userId])
+  @@index([categoryId])
 }

@@ -6,6 +6,30 @@ export type ProjectCategory = 'ml' | 'api' | 'fullstack' | 'other'
 /**
  * Estrutura base de um projeto retornado pela API.
  */
+export type ProjectImage = {
+  id: string
+  url: string
+  alt: string | null
+  order: number
+}
+
+export type ProjectCategoryRelation = {
+  category: {
+    id: string
+    name: string
+    slug: string
+    color?: string
+  }
+}
+
+export type ProjectStackRelation = {
+  stackDetail: {
+    id: string
+    name: string
+    category: StackCategory
+  }
+}
+
 export type Project = {
   id: string
   title: string
@@ -15,6 +39,9 @@ export type Project = {
   githubUrl?: string
   demoUrl?: string
   imageUrl?: string | string[]
+  images?: ProjectImage[]
+  categories?: ProjectCategoryRelation[]
+  stacks?: ProjectStackRelation[]
   category: ProjectCategory
   categoryLabel?: string
   featured: boolean
@@ -126,4 +153,73 @@ export type Service = {
   title: string
   description: string
   icon: string
+}
+
+/**
+ * Stack associada a uma entrada de carreira.
+ */
+export type CareerStackItem = {
+  id: string
+  stackDetail: {
+    id: string
+    name: string
+    category: StackCategory
+  }
+}
+
+export type CareerDomainItem = {
+  id: string
+  domain: {
+    id: string
+    name: string
+    slug: string
+    color?: string
+  }
+}
+
+/**
+ * Entrada do historico profissional (timeline).
+ */
+export type CareerEntry = {
+  id: string
+  company: string
+  role: string
+  contractType: string
+  startDate: string
+  endDate: string | null
+  summary: string
+  projectTypes: string[]
+  actions: string[]
+  stacks: CareerStackItem[]
+  domains: CareerDomainItem[]
+}
+
+/**
+ * Categoria associada a uma stack.
+ */
+export type StackCategory = {
+  id: string
+  name: string
+  slug: string
+  color?: string
+  icon?: string
+}
+
+/**
+ * Detalhamento de uma tecnologia/stack.
+ */
+export type StackDetail = {
+  id: string
+  name: string
+  categoryId: string
+  category: StackCategory
+  startYear: number
+  endYear: number | null
+  level: string
+  icon: string | null
+  profProjects: string[]
+  personalProjects: string[]
+  solutions: string[]
+  patterns: string[]
+  order?: number
 }

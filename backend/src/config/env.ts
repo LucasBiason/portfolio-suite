@@ -36,6 +36,5 @@ export const appEnv = {
   databaseUrl: required('DATABASE_URL'),
   jwtSecret: required('JWT_SECRET'),
   defaultEmail: required('PORTFOLIO_DEFAULT_EMAIL'),
-  defaultPassword: required('PORTFOLIO_DEFAULT_PASSWORD'),
 };
 

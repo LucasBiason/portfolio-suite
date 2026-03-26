@@ -96,9 +96,11 @@ services:
   database:
     image: postgres:16-alpine
     container_name: portfolio-db
+    env_file:
+      - ./configs/.env.prod
     environment:
-      POSTGRES_DB: portfolio
-      POSTGRES_USER: portfolio
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
     volumes:
       - pgdata:/var/lib/postgresql/data

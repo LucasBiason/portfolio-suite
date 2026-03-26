@@ -2,6 +2,9 @@ import nodemailer from 'nodemailer';
 import { prisma } from '../config/prisma';
 import { appEnv } from '../config/env';
 
+const escapeHtml = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 interface ContactEmailData {
   name: string;
   email: string;
@@ -69,13 +72,13 @@ export const sendContactEmail = async (data: ContactEmailData): Promise<void> =>
   const mailOptions = {
     from: smtp.user,
     to: smtp.contactEmail,
-    subject: `Portfólio - Contato: ${data.name}`,
+    subject: `Portfólio - Contato: ${escapeHtml(data.name)}`,
     html: `
       <h2>Nova mensagem do Portfólio</h2>
-      <p><strong>Nome:</strong> ${data.name}</p>
-      <p><strong>E-mail:</strong> ${data.email}</p>
+      <p><strong>Nome:</strong> ${escapeHtml(data.name)}</p>
+      <p><strong>E-mail:</strong> ${escapeHtml(data.email)}</p>
       <p><strong>Mensagem:</strong></p>
-      <p>${data.message.replace(/\n/g, '<br>')}</p>
+      <p>${escapeHtml(data.message).replace(/\n/g, '<br>')}</p>
     `,
     replyTo: data.email,
   };

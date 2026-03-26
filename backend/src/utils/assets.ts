@@ -7,14 +7,7 @@ const normalizeBase = (value?: string | null): string => {
 };
 
 const getAssetBase = (): string => {
-  // In production, use the same domain (no subdomain)
-  // Assets are served via Nginx at /assets and /uploads
-  const base = normalizeBase(appEnv.assetBaseUrl);
-  if (base && !base.includes('api.lucasbiason.com')) {
-    return base;
-  }
-  // Default to empty string so relative paths work correctly
-  return '';
+  return normalizeBase(appEnv.assetBaseUrl);
 };
 
 export const buildAssetUrl = (relative?: string | null): string | undefined => {

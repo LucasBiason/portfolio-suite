@@ -1,13 +1,13 @@
 /**
- * COMPONENTE: PageHeader
- *
- * Cabeçalho padronizado para páginas admin.
- * Mesmo estilo visual do Dashboard header.
+ * @file PageHeader.tsx
+ * Standardised page header for all admin pages.
+ * Displays an optional icon, a title, an optional subtitle and an optional "Add" action button.
  */
 
 import { FC, ReactNode } from 'react'
 import { Plus } from 'lucide-react'
 
+/** Props for the PageHeader component. */
 type PageHeaderProps = {
   title: string
   subtitle?: string
@@ -16,6 +16,10 @@ type PageHeaderProps = {
   icon?: ReactNode
 }
 
+/**
+ * Renders the standardised admin page header.
+ * When `onAdd` is provided an action button is shown on the right side.
+ */
 export const PageHeader: FC<PageHeaderProps> = ({
   title,
   subtitle,

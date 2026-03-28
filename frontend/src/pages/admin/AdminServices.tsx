@@ -1,3 +1,9 @@
+/**
+ * @file AdminServices.tsx
+ * Admin page for managing professional service offerings shown on the portfolio.
+ * Provides a filterable, sortable list with a modal form for creating and editing services.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
@@ -31,10 +37,13 @@ import { FormField } from './components/FormField'
 // Types
 // ---------------------------------------------------------------------------
 
+/** Sort direction for the services table columns. */
 type SortDir = 'asc' | 'desc' | null
 
+/** Extends the public Service type with the admin-required id and order fields. */
 type ServiceWithId = Service & { id: string; order?: number }
 
+/** Controlled form state for creating or editing a service entry. */
 type ServiceForm = {
   title: string
   description: string
@@ -52,6 +61,7 @@ const PAGE_SIZE = 10
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Returns a blank ServiceForm initialised with sensible defaults. */
 const emptyForm = (): ServiceForm => ({
   title: '',
   description: '',
@@ -59,6 +69,7 @@ const emptyForm = (): ServiceForm => ({
   order: '0',
 })
 
+/** Maps a ServiceWithId API object into the controlled form shape for editing. */
 const serviceToForm = (s: ServiceWithId): ServiceForm => ({
   title: s.title,
   description: s.description,
@@ -70,6 +81,7 @@ const serviceToForm = (s: ServiceWithId): ServiceForm => ({
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
@@ -80,6 +92,11 @@ function SortIcon({ dir }: { dir: SortDir }) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin services management page.
+ * Allows creating, editing and deleting service offering entries.
+ * Used at the /admin/services route.
+ */
 export const AdminServices: FC = () => {
   // Server data
   const [services, setServices] = useState<ServiceWithId[]>([])

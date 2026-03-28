@@ -1,3 +1,10 @@
+/**
+ * @file ProjectsPage.tsx
+ * Public page listing personal projects and academic education.
+ * Projects are expandable cards with image carousels and long descriptions.
+ * Includes aggregate highlight stats and a GitHub CTA.
+ */
+
 import { useState, useCallback, useEffect, memo } from 'react'
 import { useProjects } from '@/hooks/useProjects'
 import { Header } from '@/components/Header'
@@ -35,6 +42,10 @@ const categoryIcons: Record<string, typeof Code> = {
   'education': BookOpen,
 }
 
+/**
+ * Renders an expandable project card with title, description, tech badges
+ * and an optional image carousel and long description when expanded.
+ */
 const ProjectCard = memo(({ project }: { project: Project }) => {
   const [open, setOpen] = useState(false)
   const toggle = useCallback(() => setOpen((prev) => !prev), [])
@@ -99,7 +110,7 @@ const ProjectCard = memo(({ project }: { project: Project }) => {
           {project.description}
         </p>
 
-        {/* Tech badges */}
+        {/* Technology badge chips */}
         <div className="mt-4 flex flex-wrap gap-1.5">
           {project.technologies.map((tech) => (
             <span
@@ -112,10 +123,10 @@ const ProjectCard = memo(({ project }: { project: Project }) => {
         </div>
       </button>
 
-      {/* Expanded details */}
+      {/* Expanded long description section */}
       {open && project.longDescription && (
         <div className="border-t border-white/5 p-6 md:p-8 bg-background/50">
-          {/* Screenshots carousel */}
+          {/* Project screenshot carousel */}
           {project.images && project.images.length > 0 && (
             <ImageCarouselSimple
               images={project.images.map((img) => ({ url: img.url, alt: img.alt }))}
@@ -145,7 +156,7 @@ const ProjectCard = memo(({ project }: { project: Project }) => {
             })}
           </div>
 
-          {/* Links */}
+          {/* External links (GitHub, demo) */}
           <div className="mt-6 flex flex-wrap gap-3">
             {project.githubUrl && (
               <a
@@ -185,6 +196,10 @@ const highlightsDef = [
   { key: 'techs', label: 'Tecnologias aplicadas', icon: Wrench, corner: 'from-purple to-purple/60', bg: 'bg-purple/20', color: 'text-purple' },
 ]
 
+/**
+ * Renders the public projects page with education section and project list.
+ * Used at the /projetos route.
+ */
 export const ProjectsPage = memo(() => {
   const { projects, loading, error } = useProjects()
   const { stats: apiStats } = useStats()
@@ -219,7 +234,7 @@ export const ProjectsPage = memo(() => {
             </p>
           )}
 
-          {/* GitHub CTA */}
+          {/* GitHub call-to-action */}
           {pageConfig?.projectsGithubUrl && (
             <div className="mt-8 flex flex-col items-center gap-4">
               <a
@@ -239,7 +254,7 @@ export const ProjectsPage = memo(() => {
             </div>
           )}
 
-          {/* Stats */}
+          {/* Highlight stats grid */}
           <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
             {highlightsDef.map((s) => (
               <HighlightCard
@@ -255,7 +270,7 @@ export const ProjectsPage = memo(() => {
           </div>
         </section>
 
-        {/* Formação Acadêmica (dinâmico do backend) */}
+        {/* Academic education section (dynamic from backend) */}
         {educations.length > 0 && (
           <section className="relative mb-16 py-16 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-darker/60 via-surface/80 to-primary-dark/40" />
@@ -319,7 +334,7 @@ export const ProjectsPage = memo(() => {
           </section>
         )}
 
-        {/* Projects list */}
+        {/* Projects list section */}
         <section className="container">
           <div className="mx-auto max-w-4xl">
             <div className="flex items-center justify-center gap-3 mb-8">

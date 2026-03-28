@@ -1,12 +1,13 @@
 /**
- * COMPONENTE: HighlightCard
- *
- * Card de destaque numerico para paginas publicas.
- * Cantinho colorido + icone circular (mesmo estilo do admin StatCard).
+ * @file HighlightCard.tsx
+ * Numeric highlight card for public pages.
+ * Displays a coloured corner gradient, a circular icon and a value/label pair.
+ * Mirrors the visual style of the admin StatCard.
  */
 
 import { FC, memo } from 'react'
 
+/** Props for the HighlightCard component. */
 type HighlightCardProps = {
   value: string | number
   label: string
@@ -19,6 +20,10 @@ type HighlightCardProps = {
   iconColor: string
 }
 
+/**
+ * Renders a numeric highlight card with an icon, value and label.
+ * Used on the StacksPage, CareerPage and ProjectsPage stat grids.
+ */
 export const HighlightCard: FC<HighlightCardProps> = memo(({
   value,
   label,
@@ -28,7 +33,7 @@ export const HighlightCard: FC<HighlightCardProps> = memo(({
   iconColor,
 }) => (
   <div className="relative bg-surface/80 rounded-xl p-5 overflow-hidden border border-white/5">
-    {/* Cantinho colorido */}
+    {/* Coloured corner gradient */}
     <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${cornerColor} opacity-20 rounded-bl-full`} />
 
     <div className="relative flex items-center gap-3">

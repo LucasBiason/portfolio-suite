@@ -1,3 +1,10 @@
+/**
+ * @file Header.tsx
+ * Fixed top navigation bar for both the landing page and inner pages.
+ * Shows section-anchor links on the landing page and route links on other pages.
+ * Includes a responsive mobile slide-in menu.
+ */
+
 import { MouseEvent, useState, useCallback, memo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { scrollToSection } from '@/utils/scrollToSection'
@@ -17,6 +24,10 @@ const pageNavItems = [
   { label: 'Stacks', to: '/stacks' },
 ]
 
+/**
+ * Renders the fixed top header with navigation links and a mobile menu.
+ * Used at the top of every public page.
+ */
 export const Header = memo(() => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
@@ -43,7 +54,7 @@ export const Header = memo(() => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm">
       <div className="container flex h-16 items-center gap-8">
-        {/* Logo - always visible */}
+        {/* Logo — always visible */}
         <Link
           to="/"
           className="flex items-center gap-2.5 flex-shrink-0"
@@ -54,7 +65,7 @@ export const Header = memo(() => {
           </span>
         </Link>
 
-        {/* Nav - pushed to the right */}
+        {/* Desktop nav — pushed to the right */}
         <nav className="hidden lg:flex flex-1 justify-end">
           <ul className="flex items-center gap-8 text-sm font-semibold uppercase text-white/80">
             {isLanding &&
@@ -84,7 +95,7 @@ export const Header = memo(() => {
           </ul>
         </nav>
 
-        {/* Mobile menu button */}
+        {/* Mobile hamburger button */}
         <button
           type="button"
           className="ml-auto text-3xl text-white lg:hidden"

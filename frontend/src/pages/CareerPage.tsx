@@ -1,3 +1,10 @@
+/**
+ * @file CareerPage.tsx
+ * Public page displaying the professional career history as a vertical timeline.
+ * Each entry expands to show project types, actions taken and the full stack.
+ * Includes aggregate stats and a business domains section at the bottom.
+ */
+
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useCareer } from '@/hooks/useCareer'
 import { useStats } from '@/hooks/useStats'
@@ -10,6 +17,12 @@ import { HighlightCard } from '@/components/HighlightCard'
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
+/**
+ * Formats a date range as "Mon/YYYY - Mon/YYYY" or "Mon/YYYY - Atual".
+ *
+ * @param start - ISO date string for the start date.
+ * @param end - ISO date string for the end date, or null for the current position.
+ */
 function formatPeriod(start: string, end: string | null): string {
   const s = new Date(start)
   const startStr = `${MONTHS[s.getMonth()]}/${s.getFullYear()}`
@@ -18,6 +31,12 @@ function formatPeriod(start: string, end: string | null): string {
   return `${startStr} - ${MONTHS[e.getMonth()]}/${e.getFullYear()}`
 }
 
+/**
+ * Calculates the human-readable duration between two dates.
+ *
+ * @param start - ISO date string for the start date.
+ * @param end - ISO date string for the end date, or null to use today.
+ */
 function calcDuration(start: string, end: string | null): string {
   const s = new Date(start)
   const e = end ? new Date(end) : new Date()
@@ -30,6 +49,12 @@ function calcDuration(start: string, end: string | null): string {
   return `${years} ${years === 1 ? 'ano' : 'anos'} e ${rem} ${rem === 1 ? 'mês' : 'meses'}`
 }
 
+/**
+ * Groups career stack items by their category name.
+ *
+ * @param stacks - Array of CareerStackItem from a career entry.
+ * @returns A record mapping category names to arrays of technology names.
+ */
 const groupStacks = (stacks: CareerStackItem[]) => {
   const groups: Record<string, string[]> = {}
   for (const s of stacks) {
@@ -41,6 +66,10 @@ const groupStacks = (stacks: CareerStackItem[]) => {
   return groups
 }
 
+/**
+ * Renders a single timeline entry with a dot indicator and expandable detail card.
+ * Shows role, company, period, domain tags, stack preview and expanded details.
+ */
 const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
   const [open, setOpen] = useState(false)
   const toggle = useCallback(() => setOpen((prev) => !prev), [])
@@ -62,7 +91,7 @@ const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
           onClick={toggle}
           className="w-full text-left rounded-2xl border border-white/5 bg-surface/90 p-5 md:p-6 shadow-lg transition-all hover:border-primary/30 hover:shadow-xl cursor-pointer"
         >
-          {/* Header - always visible */}
+          {/* Card header — always visible */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <h3 className="font-header text-xl font-semibold text-white">{entry.role}</h3>
@@ -95,7 +124,7 @@ const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
             {entry.summary}
           </p>
 
-          {/* Stack badges preview (always visible) */}
+          {/* Stack badge preview — always visible */}
           <div className="mt-4 flex flex-wrap gap-1.5">
             {entry.stacks.slice(0, 8).map((s) => (
               <span
@@ -112,7 +141,7 @@ const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
             )}
           </div>
 
-          {/* Expand indicator */}
+          {/* Expand/collapse indicator */}
           <div className="mt-3 flex items-center justify-center gap-2 text-grey-20">
             {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             <span className="font-body text-xs uppercase tracking-wider">
@@ -124,7 +153,7 @@ const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
         {/* Expanded details */}
         {open && (
           <div className="mt-2 rounded-2xl border border-primary/20 bg-background/95 p-5 md:p-6 space-y-6 animate-in fade-in duration-200">
-            {/* Tipos de Projeto */}
+            {/* Project types */}
             <div>
               <h4 className="flex items-center gap-2 font-header text-sm font-semibold uppercase tracking-wider text-primary">
                 <Layers className="h-4 w-4" />
@@ -140,7 +169,7 @@ const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
               </ul>
             </div>
 
-            {/* Acoes */}
+            {/* Actions taken */}
             <div>
               <h4 className="flex items-center gap-2 font-header text-sm font-semibold uppercase tracking-wider text-primary">
                 <Hash className="h-4 w-4" />
@@ -156,7 +185,7 @@ const TimelineItem = memo(({ entry }: { entry: CareerEntry }) => {
               </ul>
             </div>
 
-            {/* Stack por categoria */}
+            {/* Full stack grouped by category */}
             <div>
               <h4 className="flex items-center gap-2 font-header text-sm font-semibold uppercase tracking-wider text-primary">
                 <Globe className="h-4 w-4" />
@@ -198,8 +227,12 @@ const statsDef = [
   { key: 'stacks', label: 'Tecnologias', icon: Layers, corner: 'from-purple to-purple/60', bg: 'bg-purple/20', color: 'text-purple' },
 ]
 
-// Domains and patterns are derived from career data - no hardcoded values
+// Domains are derived dynamically from career data — no hardcoded values
 
+/**
+ * Renders the public career history page with a vertical timeline and domains section.
+ * Used at the /historico route.
+ */
 export const CareerPage = memo(() => {
   const { career, loading, error } = useCareer()
   const { stats: apiStats } = useStats()
@@ -213,7 +246,7 @@ export const CareerPage = memo(() => {
     stacks: String(apiStats.stacks.totalStacks),
   }
 
-  // Domínios extraídos dos dados de career (dinâmico)
+  // Domains extracted dynamically from career data
   const domains = useMemo(() => {
     const domainMap = new Map<string, { name: string; color?: string }>()
     for (const c of career) {
@@ -241,7 +274,7 @@ export const CareerPage = memo(() => {
             </p>
           )}
 
-          {/* Stats */}
+          {/* Highlight stats grid */}
           <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
             {statsDef.map((s) => (
               <HighlightCard
@@ -257,7 +290,7 @@ export const CareerPage = memo(() => {
           </div>
         </section>
 
-        {/* Timeline */}
+        {/* Vertical timeline */}
         <section className="container">
           <div className="mx-auto max-w-4xl">
             {loading && (
@@ -273,7 +306,7 @@ export const CareerPage = memo(() => {
 
             {!loading && !error && (
               <div className="relative">
-                {/* Timeline line */}
+                {/* Vertical connecting line */}
                 <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-primary/20" />
 
                 <div className="space-y-2">
@@ -286,7 +319,7 @@ export const CareerPage = memo(() => {
           </div>
         </section>
 
-        {/* Domains */}
+        {/* Business domains section */}
         <section className="relative mt-0 py-16 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-bl from-surface/80 via-primary-darker/40 to-surface/60" />
 

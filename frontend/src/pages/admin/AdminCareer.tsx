@@ -1,3 +1,10 @@
+/**
+ * @file AdminCareer.tsx
+ * Admin page for managing professional career history entries.
+ * Provides server-side filtered/sorted listing with a modal form for
+ * creating and editing career entries including stack and domain associations.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Briefcase,
@@ -36,10 +43,13 @@ import { FormField } from './components/FormField'
 // Types
 // ---------------------------------------------------------------------------
 
+/** Sort direction for the career entries table columns. */
 type SortDir = 'asc' | 'desc' | null
 
+/** Alias for the admin category shape used as a business domain. */
 type CareerDomain = AdminCategory
 
+/** Controlled form state for creating or editing a career entry. */
 type CareerForm = {
   company: string
   role: string
@@ -84,14 +94,28 @@ const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', '
 // Helpers
 // ---------------------------------------------------------------------------
 
+/**
+ * Formats an ISO date string as "Mon/YYYY".
+ * @param iso - ISO 8601 date string.
+ */
 const fmtDate = (iso: string): string => {
   const d = new Date(iso)
   return `${MONTHS[d.getMonth()]}/${d.getFullYear()}`
 }
 
+/**
+ * Formats a career period as "Mon/YYYY - Mon/YYYY" or "Mon/YYYY - Atual".
+ * @param start - ISO start date.
+ * @param end - ISO end date, or null when currently employed.
+ */
 const fmtPeriod = (start: string, end: string | null): string =>
   `${fmtDate(start)} - ${end ? fmtDate(end) : 'Atual'}`
 
+/**
+ * Returns a compact human-readable duration string, e.g. "2a 3m" or "8m".
+ * @param start - ISO start date.
+ * @param end - ISO end date, or null to use today.
+ */
 const calcDuration = (start: string, end: string | null): string => {
   const s = new Date(start)
   const e = end ? new Date(end) : new Date()
@@ -104,6 +128,7 @@ const calcDuration = (start: string, end: string | null): string => {
   return `${y}a ${r}m`
 }
 
+/** Returns a blank CareerForm initialised with sensible defaults. */
 const emptyForm = (): CareerForm => ({
   company: '',
   role: '',
@@ -118,6 +143,7 @@ const emptyForm = (): CareerForm => ({
   domainIds: [],
 })
 
+/** Maps a CareerEntry API object into the controlled form shape for editing. */
 const entryToForm = (e: CareerEntry & { order?: number }): CareerForm => ({
   company: e.company,
   role: e.role,
@@ -136,6 +162,7 @@ const entryToForm = (e: CareerEntry & { order?: number }): CareerForm => ({
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders a toggle chip button used in the career filter bars. */
 function Chip({ label, color, active, onClick }: { label: string; color?: string; active: boolean; onClick: () => void }) {
   return (
     <button
@@ -151,6 +178,7 @@ function Chip({ label, color, active, onClick }: { label: string; color?: string
   )
 }
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
@@ -161,6 +189,12 @@ function SortIcon({ dir }: { dir: SortDir }) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin career history management page.
+ * Loads career entries from the API with filtering, sorting and pagination.
+ * Provides a modal form for creating and editing entries including stack and domain associations.
+ * Used at the /admin/career route.
+ */
 export const AdminCareer: FC = () => {
   // Server data
   const [allEntries, setAllEntries] = useState<(CareerEntry & { order?: number })[]>([])

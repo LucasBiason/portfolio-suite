@@ -1,62 +1,65 @@
 /**
- * COMPONENTE: DataTable
- *
- * Tabela reutilizável com:
- * - Ordenação por coluna (click no header)
- * - Filtro de busca (texto)
- * - Paginação (controles de página + items por página)
- * - Ações por linha (editar, deletar)
- *
- * Baseado no padrão usado em ExpenseIQ e KPI Dashboard.
+ * @file DataTable.tsx
+ * Generic reusable data table with column sorting, text search, pagination and per-row actions.
+ * Supports client-side sorting (string and numeric), configurable page sizes and
+ * optional edit/delete action buttons per row.
  */
 
 import { useState, useMemo, useCallback, ReactNode } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, Search, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pencil, Trash2 } from 'lucide-react'
 
+/** Direction of the current column sort. `null` means unsorted. */
 type SortDirection = 'asc' | 'desc' | null
 
+/** Defines a single column in the DataTable. */
 type Column<T> = {
-  /** Chave do objeto para acessar o valor */
+  /** Object key used to read the cell value. */
   key: keyof T & string
-  /** Label exibido no header */
+  /** Text shown in the column header. */
   label: string
-  /** Se a coluna é ordenável (default: true) */
+  /** Whether the column is sortable (default: true). */
   sortable?: boolean
-  /** Render customizado da célula */
+  /** Custom cell renderer. Receives the raw value and the full row object. */
   render?: (value: unknown, row: T) => ReactNode
-  /** Classe CSS extra para a célula */
+  /** Extra CSS class applied to both header and body cells. */
   className?: string
-  /** Se é campo numérico (para ordenação correta) */
+  /** When true, sorting compares values as numbers instead of strings. */
   numeric?: boolean
 }
 
+/** Props for the DataTable component. */
 type DataTableProps<T extends { id: string }> = {
-  /** Dados da tabela */
+  /** Array of row data objects. Each item must have a unique `id` string. */
   data: T[]
-  /** Definição das colunas */
+  /** Column definitions controlling headers, sorting and rendering. */
   columns: Column<T>[]
-  /** Campos para busca textual */
+  /** Keys of fields included in the full-text search filter. */
   searchFields?: (keyof T & string)[]
-  /** Placeholder do campo de busca */
+  /** Placeholder text for the search input. */
   searchPlaceholder?: string
-  /** Callback ao clicar em editar */
+  /** Called when the user clicks the edit button on a row. */
   onEdit?: (row: T) => void
-  /** Callback ao clicar em deletar */
+  /** Called when the user clicks the delete button on a row. */
   onDelete?: (row: T) => void
-  /** Items por página (default: 10) */
+  /** Number of rows per page (default: 10). */
   defaultPageSize?: number
-  /** Se está carregando */
+  /** When true, shows a loading spinner instead of the table body. */
   loading?: boolean
-  /** Mensagem quando vazio */
+  /** Text shown when no rows match the current search filter. */
   emptyMessage?: string
 }
 
+/** Renders the correct sort indicator icon based on the current sort direction. */
 function SortIcon({ direction }: { direction: SortDirection }) {
   if (direction === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (direction === 'desc') return <ChevronDown size={14} className="text-accent" />
   return <ChevronsUpDown size={14} className="text-grey-20 opacity-50" />
 }
 
+/**
+ * Renders a paginated, searchable and sortable data table.
+ * All filtering, sorting and pagination are performed client-side on the provided `data` array.
+ */
 export function DataTable<T extends { id: string }>({
   data,
   columns,

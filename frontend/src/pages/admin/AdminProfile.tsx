@@ -1,3 +1,9 @@
+/**
+ * @file AdminProfile.tsx
+ * Admin page for editing the public portfolio profile, including bio, SEO metadata,
+ * contact section copy, footer copy and avatar image upload.
+ */
+
 import { FC, FormEvent, useEffect, useState, useRef } from 'react'
 import { User, CheckCircle, Upload, Camera } from 'lucide-react'
 import { fetchAdminProfile, updateProfile, uploadAsset } from '@/services/api'
@@ -5,6 +11,7 @@ import { getAssetUrl } from '@/utils/assetUrl'
 import { PageHeader } from './components/PageHeader'
 import { FormField } from './components/FormField'
 
+/** Raw profile data shape returned by the admin profile API endpoint. */
 type ProfileData = {
   name?: string
   title?: string
@@ -16,6 +23,7 @@ type ProfileData = {
   footer?: { title?: string; description?: string; tagline?: string }
 }
 
+/** Controlled form state for editing the portfolio profile. */
 type ProfileForm = {
   displayName: string
   email: string
@@ -34,6 +42,7 @@ type ProfileForm = {
   footerTagline: string
 }
 
+/** Returns a blank ProfileForm initialised with empty strings. */
 const emptyForm = (): ProfileForm => ({
   displayName: '',
   email: '',
@@ -52,6 +61,12 @@ const emptyForm = (): ProfileForm => ({
   footerTagline: '',
 })
 
+/**
+ * Renders the admin profile editing page.
+ * Loads the current profile data, provides form fields for all editable sections,
+ * and handles avatar image upload and form submission.
+ * Used at the /admin/profile route.
+ */
 export const AdminProfile: FC = () => {
   const [form, setForm] = useState<ProfileForm>(emptyForm())
   const [loading, setLoading] = useState(true)

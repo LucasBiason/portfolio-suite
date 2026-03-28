@@ -1,3 +1,10 @@
+/**
+ * @file App.tsx
+ * Landing page of the portfolio. Renders the main sections (Hero, About,
+ * Services) and lazily loads ContactForm. Applies the theme on mount and
+ * removes any URL hash or auto-focus on initial render.
+ */
+
 import { useEffect, Suspense, lazy } from 'react'
 import { useTheme } from '@/hooks/useTheme'
 import { Header } from '@/components/Header'
@@ -10,7 +17,7 @@ import { ContactForm } from '@/components/ContactForm'
 import { Footer } from '@/components/Footer'
 import { useProjects } from '@/hooks/useProjects'
 
-// Lazy loading para seções menos críticas
+// Lazy-loaded sections that are not visible above the fold
 const LazyExperienceSection = lazy(() =>
   import('@/components/ExperienceSection').then((module) => ({
     default: module.ExperienceSection,
@@ -23,24 +30,28 @@ const LazyContactForm = lazy(() =>
   }))
 )
 
+/**
+ * Renders the portfolio landing page.
+ * Applies global theme, resets scroll position and removes URL hash on mount.
+ */
 const App = () => {
   useTheme()
   const { projects, loading, error } = useProjects()
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Remove hash da URL se existir
+      // Remove URL hash if present to avoid unwanted scroll-to-anchor behaviour
       if (window.location.hash) {
         const { pathname, search } = window.location
         window.history.replaceState(null, '', `${pathname}${search}`)
       }
-      // Previne scroll automático e remove qualquer foco automático
+      // Prevent automatic scroll and remove any auto-focus
       window.scrollTo({ top: 0, behavior: 'auto' })
-      // Remove foco de qualquer elemento que possa ter recebido auto-focus
+      // Blur any element that may have received auto-focus
       if (document.activeElement && document.activeElement !== document.body) {
         ;(document.activeElement as HTMLElement).blur()
       }
-      // Garante que o body não tenha tabindex que cause auto-focus
+      // Ensure body has no tabindex that could cause auto-focus
       document.body.removeAttribute('tabindex')
     }
   }, [])
@@ -53,8 +64,8 @@ const App = () => {
         <AboutSection />
         <ServicesSection />
 
-        {/* Projetos movidos para /projetos */}
-        {/* Experiência movida para /historico */}
+        {/* Projects moved to /projetos */}
+        {/* Experience moved to /historico */}
         <Suspense fallback={<div className="container py-16 text-center text-grey-20">Carregando...</div>}>
           <LazyContactForm />
         </Suspense>

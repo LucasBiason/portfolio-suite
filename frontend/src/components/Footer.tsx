@@ -1,6 +1,16 @@
+/**
+ * @file Footer.tsx
+ * Site-wide footer displaying the owner's name, bio, social links and tagline.
+ * Renders nothing until user data is available.
+ */
+
 import { memo } from 'react'
 import { useUser } from '@/hooks/useUser'
 
+/**
+ * Renders the site footer with social links and tagline.
+ * Used at the bottom of every public page.
+ */
 export const Footer = memo(() => {
   const { user } = useUser()
 

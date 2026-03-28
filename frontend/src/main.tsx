@@ -1,3 +1,9 @@
+/**
+ * @file main.tsx
+ * Application entry point. Bootstraps React, sets up routing with lazy-loaded
+ * pages, wraps the tree in ErrorBoundary and Suspense, then mounts into #root.
+ */
+
 import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
@@ -16,7 +22,7 @@ const ProjectsPage = lazy(() =>
   import('@/pages/ProjectsPage').then((m) => ({ default: m.ProjectsPage }))
 )
 
-// Admin pages
+// Lazy-loaded admin pages
 const AdminLogin = lazy(() =>
   import('@/pages/admin/AdminLogin').then((m) => ({ default: m.AdminLogin }))
 )
@@ -57,6 +63,9 @@ const AdminDomains = lazy(() =>
   import('@/pages/admin/AdminDomains').then((m) => ({ default: m.AdminDomains }))
 )
 
+/**
+ * Full-screen spinner shown while lazy-loaded route chunks are being fetched.
+ */
 const LoadingFallback = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
     <div className="text-center">

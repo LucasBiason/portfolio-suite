@@ -1,6 +1,13 @@
+/**
+ * @file Modal.tsx
+ * Generic overlay modal used across all admin pages for create/edit forms.
+ * Clicking the backdrop triggers `onClose`. Supports a wider variant for complex forms.
+ */
+
 import { FC, ReactNode } from 'react'
 import { X } from 'lucide-react'
 
+/** Props for the Modal component. */
 type ModalProps = {
   title: string
   onClose: () => void
@@ -8,6 +15,10 @@ type ModalProps = {
   wide?: boolean
 }
 
+/**
+ * Renders a centred overlay modal with a title bar and close button.
+ * Content is passed as children and rendered inside a scrollable container.
+ */
 export const Modal: FC<ModalProps> = ({ title, onClose, children, wide }) => (
   <div className="fixed inset-0 z-50 flex items-start justify-center px-4 py-8 overflow-y-auto">
     <div className="absolute inset-0 bg-black/70" onClick={onClose} />

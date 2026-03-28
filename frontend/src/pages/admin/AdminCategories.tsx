@@ -1,3 +1,9 @@
+/**
+ * @file AdminCategories.tsx
+ * Admin page for managing project and stack categories.
+ * Provides a filterable, sortable list with a modal form for creating and editing categories.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
@@ -32,6 +38,7 @@ import {
 // Types
 // ---------------------------------------------------------------------------
 
+/** Represents a category record returned by the admin API. */
 type Category = {
   id: string
   name: string
@@ -41,6 +48,7 @@ type Category = {
   order: number
 }
 
+/** Controlled form state for creating or editing a category. */
 type CategoryForm = {
   name: string
   slug: string
@@ -49,6 +57,7 @@ type CategoryForm = {
   order: string
 }
 
+/** Sort direction for the categories table columns. */
 type SortDir = 'asc' | 'desc' | null
 
 // ---------------------------------------------------------------------------
@@ -66,6 +75,7 @@ const TYPES = [
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Returns a blank CategoryForm initialised with sensible defaults. */
 const emptyForm = (): CategoryForm => ({
   name: '',
   slug: '',
@@ -74,6 +84,7 @@ const emptyForm = (): CategoryForm => ({
   order: '0',
 })
 
+/** Maps a Category API object into the controlled form shape for editing. */
 const toForm = (c: Category): CategoryForm => ({
   name: c.name,
   slug: c.slug,
@@ -82,6 +93,10 @@ const toForm = (c: Category): CategoryForm => ({
   order: String(c.order),
 })
 
+/**
+ * Infers the display type of a category based on its order value.
+ * Categories with order >= 100 are treated as stack categories.
+ */
 function getCategoryType(c: Category): 'project' | 'stack' {
   return c.order >= 100 ? 'stack' : 'project'
 }
@@ -90,6 +105,7 @@ function getCategoryType(c: Category): 'project' | 'stack' {
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
@@ -100,6 +116,11 @@ function SortIcon({ dir }: { dir: SortDir }) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin categories management page.
+ * Allows creating, editing and deleting both project and stack categories.
+ * Used at the /admin/categories route.
+ */
 export const AdminCategories: FC = () => {
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)

@@ -1,3 +1,10 @@
+/**
+ * @file StacksPage.tsx
+ * Public page listing all technology stacks grouped by category.
+ * Each stack card expands to show professional/personal projects, solutions
+ * and applied patterns. Includes aggregate highlight stats and category filters.
+ */
+
 import { useState, useCallback, memo, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useStacks } from '@/hooks/useStacks'
@@ -48,6 +55,11 @@ function formatYearsPublic(startYear: number, endYear: number | null): string {
   return `${diff}+ ano${diff > 1 ? 's' : ''} (${startYear} - ${endYear ? endYear : 'Atual'})`
 }
 
+/**
+ * Renders an expandable card for a single technology stack.
+ * Shows name, category icon, experience years and proficiency level.
+ * Expands to reveal project lists, solutions and applied patterns.
+ */
 const StackCard = memo(({ stack, isOpen, onToggle }: { stack: StackDetail; isOpen: boolean; onToggle: () => void }) => {
   const open = isOpen
 
@@ -86,7 +98,7 @@ const StackCard = memo(({ stack, isOpen, onToggle }: { stack: StackDetail; isOpe
           </div>
         </div>
 
-        {/* Quick preview */}
+        {/* Quick preview of the first solution when collapsed */}
         {!open && (
           <p className="mt-3 font-body text-sm text-grey-30 line-clamp-2">
             {stack.solutions[0]}
@@ -97,7 +109,7 @@ const StackCard = memo(({ stack, isOpen, onToggle }: { stack: StackDetail; isOpe
 
       {open && (
         <div className="border-t border-white/5 p-5 md:p-6 space-y-5 bg-background/50">
-          {/* Projetos Profissionais */}
+          {/* Professional projects */}
           {stack.profProjects.length > 0 && (
             <div>
               <h4 className="font-header text-xs font-semibold uppercase tracking-wider text-primary">
@@ -114,7 +126,7 @@ const StackCard = memo(({ stack, isOpen, onToggle }: { stack: StackDetail; isOpe
             </div>
           )}
 
-          {/* Projetos Pessoais */}
+          {/* Personal projects */}
           {stack.personalProjects.length > 0 && (
             <div>
               <h4 className="font-header text-xs font-semibold uppercase tracking-wider text-accent">
@@ -131,7 +143,7 @@ const StackCard = memo(({ stack, isOpen, onToggle }: { stack: StackDetail; isOpe
             </div>
           )}
 
-          {/* Solucoes */}
+          {/* Implemented solutions */}
           <div>
             <h4 className="font-header text-xs font-semibold uppercase tracking-wider text-primary">
               Soluções Implementadas
@@ -146,7 +158,7 @@ const StackCard = memo(({ stack, isOpen, onToggle }: { stack: StackDetail; isOpe
             </ul>
           </div>
 
-          {/* Padroes */}
+          {/* Applied patterns */}
           {stack.patterns.length > 0 && (
             <div>
               <h4 className="font-header text-xs font-semibold uppercase tracking-wider text-primary">
@@ -179,6 +191,10 @@ const stackStatsDef = [
   { key: 'maxYears', label: 'Máx. anos', icon: Cpu, corner: 'from-yellow to-yellow/60', bg: 'bg-yellow/20', color: 'text-yellow' },
 ]
 
+/**
+ * Renders the public stacks page with category filters and expandable stack cards.
+ * Used at the /stacks route.
+ */
 export const StacksPage = memo(() => {
   const { stacks, loading, error } = useStacks()
   const { stats: apiStats } = useStats()
@@ -224,7 +240,7 @@ export const StacksPage = memo(() => {
             </p>
           )}
 
-          {/* Stats */}
+          {/* Highlight stats grid */}
           <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
             {stackStatsDef.map((s) => (
               <HighlightCard
@@ -240,7 +256,7 @@ export const StacksPage = memo(() => {
           </div>
         </section>
 
-        {/* Category filters */}
+        {/* Category filter chips */}
         <section className="container mb-10">
           <div className="mx-auto max-w-5xl flex flex-wrap justify-center gap-2">
             <button
@@ -271,7 +287,7 @@ export const StacksPage = memo(() => {
           </div>
         </section>
 
-        {/* Stacks grid */}
+        {/* Stacks two-column grid */}
         <section className="container">
           <div className="mx-auto max-w-5xl">
             {loading && (

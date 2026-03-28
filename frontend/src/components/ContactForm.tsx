@@ -1,3 +1,10 @@
+/**
+ * @file ContactForm.tsx
+ * Contact section with a form that sends messages to the backend API.
+ * Fetches contact section metadata (title, subtitle, description) and
+ * provides inline success/error feedback after submission.
+ */
+
 import { useState, useCallback, memo } from 'react'
 import { sendContactMessage } from '@/services/api'
 import { useContact } from '@/hooks/useContact'
@@ -9,6 +16,10 @@ const initialState: ContactPayload = {
   message: '',
 }
 
+/**
+ * Renders the contact section with a name, email and message form.
+ * Used on the landing page (App.tsx) via lazy loading.
+ */
 export const ContactForm = memo(() => {
   const { contact, loading: contactLoading } = useContact()
   const [form, setForm] = useState<ContactPayload>(initialState)

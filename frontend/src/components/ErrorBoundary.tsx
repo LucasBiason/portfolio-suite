@@ -1,15 +1,29 @@
+/**
+ * @file ErrorBoundary.tsx
+ * React class-based error boundary that catches rendering errors in the
+ * component tree and shows a user-friendly fallback UI. Also reports the
+ * error payload via navigator.sendBeacon when available.
+ */
+
 import { Component, type ReactNode } from 'react'
 
+/** Props accepted by the ErrorBoundary wrapper component. */
 type ErrorBoundaryProps = {
   children: ReactNode
   fallback?: ReactNode
 }
 
+/** Internal state managed by the ErrorBoundary. */
 type ErrorBoundaryState = {
   hasError: boolean
   error: Error | null
 }
 
+/**
+ * Catches JavaScript errors anywhere in the child component tree and renders
+ * a fallback error screen instead of crashing the whole application.
+ * Used at the root level in main.tsx.
+ */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
@@ -21,7 +35,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary capturou um erro:', error, errorInfo)
+    console.error('ErrorBoundary caught an error:', error, errorInfo)
     // Log to external service if needed
     if (typeof window !== 'undefined' && window.navigator?.sendBeacon) {
       try {

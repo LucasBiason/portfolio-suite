@@ -1,23 +1,27 @@
 /**
- * COMPONENTE: QuickAction
- *
- * Botao de acao rapida para a dashboard.
- * Card clicavel com icone e label.
+ * @file QuickAction.tsx
+ * Quick-access action card for the admin dashboard.
+ * Renders as a clickable tile with an icon and a label that navigates to a given route.
  */
 
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 
+/** Props for the QuickAction component. */
 type QuickActionProps = {
   label: string
   path: string
   icon: FC<{ size?: number; className?: string }>
-  /** Icon background color, e.g. "bg-blue-500/20" */
+  /** Icon background colour class, e.g. "bg-blue-500/20". */
   iconBg?: string
-  /** Icon text color, e.g. "text-blue-400" */
+  /** Icon text colour class, e.g. "text-blue-400". */
   iconColor?: string
 }
 
+/**
+ * Renders a quick-action card as a React Router `<Link>` tile.
+ * Used in the admin dashboard's "Quick Actions" section for common navigation shortcuts.
+ */
 export const QuickAction: FC<QuickActionProps> = ({
   label,
   path,

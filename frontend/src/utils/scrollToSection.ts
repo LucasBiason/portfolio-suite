@@ -1,5 +1,19 @@
+/**
+ * @file scrollToSection.ts
+ * Utility for smooth-scrolling to named anchor sections, accounting for
+ * the fixed header height, and cleaning up the URL hash afterward.
+ */
+
+/** Pixel offset applied to scroll position to account for the fixed header. */
 const HEADER_OFFSET = 80
 
+/**
+ * Smoothly scrolls the page to the element matching the given hash,
+ * offset by the header height. Removes the hash from the URL after scrolling
+ * and prevents visible focus rings triggered by programmatic focus.
+ *
+ * @param hash - The anchor hash string (e.g. "#sobre" or "#inicio").
+ */
 export const scrollToSection = (hash: string): void => {
   if (typeof window === 'undefined') {
     return
@@ -27,7 +41,7 @@ export const scrollToSection = (hash: string): void => {
     const { pathname, search } = window.location
     window.history.replaceState(null, '', `${pathname}${search}`)
 
-    // Garante que nenhum título ou link fique com foco visível após o scroll
+    // Ensure no heading or link retains a visible focus ring after scrolling
     if (document.body) {
       document.body.setAttribute('tabindex', '-1')
       document.body.focus()

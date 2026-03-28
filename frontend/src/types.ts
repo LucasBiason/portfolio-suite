@@ -1,11 +1,13 @@
 /**
- * Categorias possíveis para um projeto exibido na vitrine.
+ * @file types.ts
+ * Central TypeScript type definitions for the portfolio domain model.
+ * All API response shapes and UI-facing data structures are declared here.
  */
+
+/** Possible category values for a project displayed in the showcase. */
 export type ProjectCategory = 'ml' | 'api' | 'fullstack' | 'other'
 
-/**
- * Estrutura base de um projeto retornado pela API.
- */
+/** Represents an image associated with a project. */
 export type ProjectImage = {
   id: string
   url: string
@@ -13,6 +15,7 @@ export type ProjectImage = {
   order: number
 }
 
+/** Represents the relationship between a project and a category. */
 export type ProjectCategoryRelation = {
   category: {
     id: string
@@ -22,6 +25,7 @@ export type ProjectCategoryRelation = {
   }
 }
 
+/** Represents the relationship between a project and a stack. */
 export type ProjectStackRelation = {
   stackDetail: {
     id: string
@@ -30,6 +34,7 @@ export type ProjectStackRelation = {
   }
 }
 
+/** Represents a portfolio project returned by the API. */
 export type Project = {
   id: string
   title: string
@@ -47,34 +52,33 @@ export type Project = {
   featured: boolean
 }
 
-/**
- * Payload enviado pelo formulário de contato.
- */
+/** Payload submitted by the contact form. */
 export type ContactPayload = {
   name: string
   email: string
   message: string
 }
 
-/**
- * Informações globais do usuário/dono do portfólio.
- */
+/** Content block for a named section (title, subtitle, description). */
 export type SectionContent = {
   title: string
   subtitle: string
   description?: string
 }
 
+/** Map of configurable page sections. */
 export type Sections = {
   projects?: SectionContent
 }
 
+/** Configurable content for the site footer. */
 export type FooterContent = {
   title?: string
   description?: string
   tagline?: string
 }
 
+/** Global information about the portfolio owner. */
 export type User = {
   name: string
   title: string
@@ -88,26 +92,20 @@ export type User = {
   footer?: FooterContent
 }
 
-/**
- * Link social exibido no cabeçalho/rodapé.
- */
+/** Social link displayed in the header and footer. */
 export type SocialLink = {
   icon: string
   url: string
   label: string
 }
 
-/**
- * Metadados dinâmicos para SEO (title/meta description).
- */
+/** Dynamic SEO metadata (page title and meta description). */
 export type SeoMetadata = {
   title?: string
   description?: string
 }
 
-/**
- * Conteúdo da seção "Sobre".
- */
+/** Content for the "About" section. */
 export type About = {
   title: string
   subtitle: string
@@ -116,9 +114,7 @@ export type About = {
   highlights: string[]
 }
 
-/**
- * Card de contato (ex.: email, WhatsApp).
- */
+/** A contact channel card (e.g. email, WhatsApp). */
 export type ContactInfo = {
   icon: string
   title: string
@@ -126,9 +122,7 @@ export type ContactInfo = {
   href: string | null
 }
 
-/**
- * Bloco completo da seção de contato.
- */
+/** Full content block for the contact section. */
 export type Contact = {
   title: string
   subtitle: string
@@ -136,9 +130,7 @@ export type Contact = {
   info: ContactInfo[]
 }
 
-/**
- * Experiência profissional exibida na linha do tempo.
- */
+/** A professional experience item displayed on the timeline. */
 export type ExperienceItem = {
   company: string
   role: string
@@ -146,18 +138,14 @@ export type ExperienceItem = {
   summary: string
 }
 
-/**
- * Serviço/especialidade apresentado na seção "Especialidades".
- */
+/** A service / speciality shown in the "Services" section. */
 export type Service = {
   title: string
   description: string
   icon: string
 }
 
-/**
- * Stack associada a uma entrada de carreira.
- */
+/** Stack item linked to a career entry. */
 export type CareerStackItem = {
   id: string
   stackDetail: {
@@ -167,6 +155,7 @@ export type CareerStackItem = {
   }
 }
 
+/** Business domain item linked to a career entry. */
 export type CareerDomainItem = {
   id: string
   domain: {
@@ -177,9 +166,7 @@ export type CareerDomainItem = {
   }
 }
 
-/**
- * Entrada do historico profissional (timeline).
- */
+/** A single entry in the professional history timeline. */
 export type CareerEntry = {
   id: string
   company: string
@@ -194,9 +181,7 @@ export type CareerEntry = {
   domains: CareerDomainItem[]
 }
 
-/**
- * Categoria associada a uma stack.
- */
+/** Category associated with a technology stack. */
 export type StackCategory = {
   id: string
   name: string
@@ -205,9 +190,7 @@ export type StackCategory = {
   icon?: string
 }
 
-/**
- * Detalhamento de uma tecnologia/stack.
- */
+/** Detailed information about a technology / stack entry. */
 export type StackDetail = {
   id: string
   name: string

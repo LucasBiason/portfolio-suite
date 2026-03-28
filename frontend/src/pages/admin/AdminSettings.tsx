@@ -1,9 +1,16 @@
+/**
+ * @file AdminSettings.tsx
+ * Admin page for managing global portfolio settings: colour theme, typography,
+ * SMTP email configuration and public page copy (titles, subtitles, GitHub CTA).
+ */
+
 import { FC, useEffect, useState } from 'react'
 import { Settings, Palette, Type, Save, RotateCcw, Mail, Send, FileText } from 'lucide-react'
 import { fetchSettings, updateSettings, testEmail } from '@/services/api'
 import { PageHeader } from './components/PageHeader'
 import { FormField } from './components/FormField'
 
+/** Controlled form state for all configurable global settings. */
 type SettingsForm = {
   primaryColor: string
   primaryDarkColor: string
@@ -31,6 +38,7 @@ type SettingsForm = {
   stacksPageSubtitle: string
 }
 
+/** Default values applied when no settings have been saved to the API yet. */
 const defaults: SettingsForm = {
   primaryColor: '#0047AB',
   primaryDarkColor: '#002D6B',
@@ -73,6 +81,12 @@ const fontOptions = [
   'Roboto', 'Lato', 'Source Sans Pro', 'Nunito', 'Work Sans',
 ]
 
+/**
+ * Renders the admin settings page.
+ * Loads current settings from the API, provides editors for theme colours, fonts,
+ * SMTP configuration and public page copy, and handles form submission with live preview.
+ * Used at the /admin/settings route.
+ */
 export const AdminSettings: FC = () => {
   const [form, setForm] = useState<SettingsForm>(defaults)
   const [saving, setSaving] = useState(false)

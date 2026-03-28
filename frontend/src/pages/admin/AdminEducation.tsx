@@ -1,3 +1,9 @@
+/**
+ * @file AdminEducation.tsx
+ * Admin page for managing academic education entries shown on the projects page.
+ * Provides a filterable, sortable list with a modal form for creating and editing education records.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import {
   ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
@@ -11,6 +17,7 @@ import { Modal } from './components/Modal'
 import { FormField } from './components/FormField'
 import { ConfirmDialog } from './components/ConfirmDialog'
 
+/** Represents an education record returned by the admin API. */
 type Education = {
   id: string
   title: string
@@ -22,6 +29,7 @@ type Education = {
   order: number
 }
 
+/** Controlled form state for creating or editing an education entry. */
 type EducationForm = {
   title: string
   institution: string
@@ -32,9 +40,11 @@ type EducationForm = {
   order: string
 }
 
+/** Sort direction for the education table columns. */
 type SortDir = 'asc' | 'desc' | null
 const PAGE_SIZE = 10
 
+/** Resolves the API base URL for direct fetch calls in this module. */
 const getApiBase = () => {
   if (typeof window === 'undefined') return ''
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
@@ -42,27 +52,36 @@ const getApiBase = () => {
   return window.location.origin
 }
 
+/** Returns the authorisation headers required for admin API requests. */
 const authHeaders = () => {
   const token = getAuthToken()
   return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
 }
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
   return <ChevronsUpDown size={14} className="text-grey-20 opacity-50" />
 }
 
+/** Returns a blank EducationForm initialised with sensible defaults. */
 const emptyForm = (): EducationForm => ({
   title: '', institution: '', period: '', description: '', status: 'completed', tags: '', order: '0',
 })
 
+/** Maps an Education API object into the controlled form shape for editing. */
 const toForm = (e: Education): EducationForm => ({
   title: e.title, institution: e.institution, period: e.period,
   description: e.description ?? '', status: e.status,
   tags: e.tags.join(', '), order: String(e.order),
 })
 
+/**
+ * Renders the admin education management page.
+ * Allows creating, editing and deleting academic education entries.
+ * Used at the /admin/education route.
+ */
 export const AdminEducation: FC = () => {
   const [allItems, setAllItems] = useState<Education[]>([])
   const [items, setItems] = useState<Education[]>([])

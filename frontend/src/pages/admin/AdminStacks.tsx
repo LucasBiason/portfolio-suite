@@ -1,3 +1,10 @@
+/**
+ * @file AdminStacks.tsx
+ * Admin page for managing technology stack entries.
+ * Provides server-side filtered/sorted listing with category and proficiency-level chips,
+ * plus a modal form for creating and editing stacks.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
@@ -33,8 +40,10 @@ import { FormField } from './components/FormField'
 // Types
 // ---------------------------------------------------------------------------
 
+/** Sort direction for the stacks table columns. */
 type SortDir = 'asc' | 'desc' | null
 
+/** Controlled form state for creating or editing a stack entry. */
 type StackForm = {
   name: string
   categoryId: string
@@ -76,6 +85,7 @@ const LEVEL_COLORS: Record<string, { bg: string; text: string; border: string }>
 
 const currentYear = new Date().getFullYear()
 
+/** Returns a blank StackForm initialised with sensible defaults. */
 const emptyForm = (): StackForm => ({
   name: '',
   categoryId: '',
@@ -90,6 +100,7 @@ const emptyForm = (): StackForm => ({
   order: '0',
 })
 
+/** Maps a StackDetail API object into the controlled form shape for editing. */
 const stackToForm = (s: StackDetail): StackForm => ({
   name: s.name,
   categoryId: s.categoryId,
@@ -104,6 +115,11 @@ const stackToForm = (s: StackDetail): StackForm => ({
   order: String(s.order ?? 0),
 })
 
+/**
+ * Formats a year range as a human-readable experience string.
+ * @param startYear - The year the technology was first used.
+ * @param endYear - The year it was last used, or null if still active.
+ */
 function formatYears(startYear: number, endYear: number | null): string {
   const end = endYear ?? currentYear
   const diff = end - startYear
@@ -115,18 +131,21 @@ function formatYears(startYear: number, endYear: number | null): string {
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
   return <ChevronsUpDown size={14} className="text-grey-20 opacity-50" />
 }
 
+/** Props for the Chip filter button. */
 type ChipProps = {
   label: string
   active: boolean
   onClick: () => void
 }
 
+/** Renders a toggle chip button used in the category and level filter bars. */
 function Chip({ label, active, onClick }: ChipProps) {
   return (
     <button
@@ -149,6 +168,12 @@ function Chip({ label, active, onClick }: ChipProps) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin stacks management page.
+ * Loads stacks from the API with server-side filtering, sorting and pagination.
+ * Provides a modal form for creating and editing stack entries.
+ * Used at the /admin/stacks route.
+ */
 export const AdminStacks: FC = () => {
   // Server data
   const [stacks, setStacks] = useState<StackDetail[]>([])

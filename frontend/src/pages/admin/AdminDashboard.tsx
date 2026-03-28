@@ -1,3 +1,10 @@
+/**
+ * @file AdminDashboard.tsx
+ * Main admin dashboard page. Displays stat cards, interactive charts
+ * (horizontal bar, pie/donut), portfolio health indicators, recent activity
+ * and quick action shortcuts.
+ */
+
 import { FC, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -35,6 +42,7 @@ import type { Project, CareerEntry, StackDetail } from '@/types'
 // Types
 // ---------------------------------------------------------------------------
 
+/** Represents a recently updated item shown in the activity feed. */
 type RecentItem = {
   id: string
   title: string
@@ -44,6 +52,7 @@ type RecentItem = {
   updatedAt: string
 }
 
+/** Minimal education item shape needed for health indicator calculation. */
 type EducationItem = {
   id: string
   status: string
@@ -66,6 +75,11 @@ const LEVEL_COLORS: Record<string, string> = {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/**
+ * Returns a human-readable relative time string (e.g. "5min atrás", "2d atrás").
+ *
+ * @param dateStr - ISO date string to compare against now.
+ */
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
@@ -82,6 +96,7 @@ function timeAgo(dateStr: string): string {
 // Chart sub-components
 // ---------------------------------------------------------------------------
 
+/** Props for the horizontal bar chart component. */
 type HBarProps = {
   items: { label: string; value: number; color: string }[]
   title: string
@@ -90,6 +105,9 @@ type HBarProps = {
   cornerColor: string
 }
 
+/**
+ * Renders a horizontal bar chart with hover tooltips showing value and percentage.
+ */
 function HBarChart({ items, title, icon: Icon, iconColor, cornerColor }: HBarProps) {
   const max = Math.max(...items.map((i) => i.value), 1)
   const total = items.reduce((s, i) => s + i.value, 0)
@@ -136,6 +154,7 @@ function HBarChart({ items, title, icon: Icon, iconColor, cornerColor }: HBarPro
   )
 }
 
+/** Props for the pie / donut chart component. */
 type PieChartProps = {
   items: { label: string; value: number; color: string }[]
   title: string
@@ -144,6 +163,10 @@ type PieChartProps = {
   cornerColor: string
 }
 
+/**
+ * Renders a CSS conic-gradient donut chart with an interactive legend.
+ * Hovering a segment shows the count and percentage in the centre.
+ */
 function PieChart({ items, title, icon: Icon, iconColor, cornerColor }: PieChartProps) {
   const total = items.reduce((sum, i) => sum + i.value, 0) || 1
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null)
@@ -175,7 +198,7 @@ function PieChart({ items, title, icon: Icon, iconColor, cornerColor }: PieChart
               className="w-44 h-44 rounded-full relative"
               style={{ background: `conic-gradient(${gradient})` }}
             >
-              {/* Invisible hover segments */}
+              {/* Invisible SVG segments for hover interactivity */}
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
                 {segments.map((seg) => {
                   const startRad = ((seg.start - 90) * Math.PI) / 180
@@ -211,7 +234,7 @@ function PieChart({ items, title, icon: Icon, iconColor, cornerColor }: PieChart
               </div>
             </div>
           </div>
-          {/* Legend */}
+          {/* Chart legend */}
           <div className="w-full space-y-2">
             {items.map((item) => {
               const pct = Math.round((item.value / total) * 100)
@@ -235,6 +258,7 @@ function PieChart({ items, title, icon: Icon, iconColor, cornerColor }: PieChart
   )
 }
 
+/** A single portfolio health indicator row. */
 type HealthItem = {
   label: string
   value: number
@@ -242,6 +266,10 @@ type HealthItem = {
   good: boolean
 }
 
+/**
+ * Renders a list of portfolio health indicators showing completeness percentages.
+ * Green check for healthy items, yellow warning for items needing attention.
+ */
 function HealthIndicators({ items }: { items: HealthItem[] }) {
   return (
     <div className="relative bg-surface rounded-xl border border-white/5 p-5 overflow-hidden">
@@ -278,6 +306,11 @@ function HealthIndicators({ items }: { items: HealthItem[] }) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin dashboard with stats, charts, health indicators,
+ * recent activity and quick action shortcuts.
+ * Used at the /admin/dashboard route.
+ */
 export const AdminDashboard: FC = () => {
   const [counts, setCounts] = useState({ projects: 0, career: 0, stacks: 0, services: 0, contacts: 0, educations: 0 })
   const [projectsData, setProjectsData] = useState<Project[]>([])
@@ -356,6 +389,7 @@ export const AdminDashboard: FC = () => {
 
   // --- Derived chart data ---
 
+  /** Groups stacks by proficiency level for the pie chart. */
   const stacksByLevel = useMemo(() => {
     const counts: Record<string, number> = {}
     for (const s of stacksData) {
@@ -366,6 +400,7 @@ export const AdminDashboard: FC = () => {
       .map(([label, value]) => ({ label, value, color: LEVEL_COLORS[label] || '#5e81ac' }))
   }, [stacksData])
 
+  /** Groups stacks by category for the horizontal bar chart. */
   const stacksByCategory = useMemo(() => {
     const counts: Record<string, { name: string; color: string; count: number }> = {}
     for (const s of stacksData) {
@@ -379,6 +414,7 @@ export const AdminDashboard: FC = () => {
       .map((c) => ({ label: c.name, value: c.count, color: c.color }))
   }, [stacksData])
 
+  /** Groups career entries by business domain for the horizontal bar chart. */
   const careerByDomain = useMemo(() => {
     const counts: Record<string, { name: string; color: string; count: number }> = {}
     for (const c of careerData) {
@@ -412,7 +448,7 @@ export const AdminDashboard: FC = () => {
     ]
   }, [projectsData, careerData, educationData])
 
-  // --- Type icons/colors for recent items ---
+  // --- Icon and colour maps for recent activity item types ---
   const typeIcon: Record<string, FC<{ size?: number; className?: string }>> = {
     project: FolderKanban,
     career: Briefcase,
@@ -430,7 +466,7 @@ export const AdminDashboard: FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Dashboard header */}
       <div className="flex items-center gap-3">
         <div className="p-2.5 bg-primary/20 rounded-xl">
           <LayoutDashboard size={22} className="text-accent" />
@@ -441,7 +477,7 @@ export const AdminDashboard: FC = () => {
         </div>
       </div>
 
-      {/* Stat cards */}
+      {/* Summary stat cards */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -465,7 +501,7 @@ export const AdminDashboard: FC = () => {
         </div>
       )}
 
-      {/* Row 1: Stacks by Level (pie 2col) + Projects by Category (bars 4col) */}
+      {/* Row 1: Stacks by Level (pie — 2 cols) + Projects by Category (bars — 4 cols) */}
       {!loading && (
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
           {stacksData.length > 0 && <div className="lg:col-span-2"><PieChart items={stacksByLevel} title="Stacks por Nível" icon={BarChart3} iconColor="text-green" cornerColor="from-green to-green/40" /></div>}
@@ -484,7 +520,7 @@ export const AdminDashboard: FC = () => {
         </div>
       )}
 
-      {/* Row 2: Stacks by Category + Career by Domain */}
+      {/* Row 2: Stacks by Category + Career by Domain (each 6 cols) */}
       {!loading && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {stacksData.length > 0 && <HBarChart items={stacksByCategory} title="Stacks por Categoria" icon={Layers} iconColor="text-accent" cornerColor="from-accent to-primary" />}
@@ -492,12 +528,12 @@ export const AdminDashboard: FC = () => {
         </div>
       )}
 
-      {/* Row 4: Health + Recent Activity + Quick Actions */}
+      {/* Row 3: Health indicators + Recent Activity + Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Health indicators */}
+        {/* Portfolio health indicators */}
         {!loading && <HealthIndicators items={healthItems} />}
 
-        {/* Recent activity */}
+        {/* Recent activity feed */}
         <div className="lg:col-span-2 relative bg-surface rounded-xl overflow-hidden border border-white/5">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-nord-8 to-nord-10 opacity-10 rounded-bl-full" />
           <div className="relative p-5">
@@ -540,7 +576,7 @@ export const AdminDashboard: FC = () => {
           </div>
         </div>
 
-        {/* Quick actions */}
+        {/* Quick action shortcuts */}
         <div className="relative bg-surface rounded-xl overflow-hidden border border-white/5">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary to-primary-dark opacity-10 rounded-bl-full" />
           <div className="relative p-5">

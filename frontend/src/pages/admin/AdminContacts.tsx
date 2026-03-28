@@ -1,3 +1,9 @@
+/**
+ * @file AdminContacts.tsx
+ * Admin page for managing contact channel entries (social links and direct contact info).
+ * Provides a filterable, sortable list with a modal form for creating and editing contacts.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
@@ -31,8 +37,10 @@ import { FormField } from './components/FormField'
 // Types
 // ---------------------------------------------------------------------------
 
+/** Sort direction for the contacts table columns. */
 type SortDir = 'asc' | 'desc' | null
 
+/** Represents a contact channel record returned by the admin API. */
 type ContactItem = {
   id: string
   title: string
@@ -43,6 +51,7 @@ type ContactItem = {
   order?: number
 }
 
+/** Controlled form state for creating or editing a contact entry. */
 type ContactForm = {
   title: string
   value: string
@@ -62,6 +71,7 @@ const PAGE_SIZE = 10
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Returns a blank ContactForm initialised with sensible defaults. */
 const emptyForm = (): ContactForm => ({
   title: '',
   value: '',
@@ -71,6 +81,7 @@ const emptyForm = (): ContactForm => ({
   order: '0',
 })
 
+/** Maps a ContactItem API object into the controlled form shape for editing. */
 const contactToForm = (c: ContactItem): ContactForm => ({
   title: c.title,
   value: c.value,
@@ -84,18 +95,21 @@ const contactToForm = (c: ContactItem): ContactForm => ({
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
   return <ChevronsUpDown size={14} className="text-grey-20 opacity-50" />
 }
 
+/** Props for the Chip filter button. */
 type ChipProps = {
   label: string
   active: boolean
   onClick: () => void
 }
 
+/** Renders a toggle chip button used in the contact type filter bar. */
 function Chip({ label, active, onClick }: ChipProps) {
   return (
     <button
@@ -118,6 +132,11 @@ function Chip({ label, active, onClick }: ChipProps) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin contacts management page.
+ * Allows creating, editing and deleting contact channel entries (social and direct contact).
+ * Used at the /admin/contacts route.
+ */
 export const AdminContacts: FC = () => {
   // Server data
   const [contacts, setContacts] = useState<ContactItem[]>([])

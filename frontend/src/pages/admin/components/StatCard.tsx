@@ -1,17 +1,15 @@
 /**
- * COMPONENTE: StatCard
- *
- * Card de estatística com:
- * - Cantinho colorido (gradiente)
- * - Ícone pequeno com fundo colorido
- * - Valor numérico + label ao lado do ícone
- * - Clicável (link para página)
+ * @file StatCard.tsx
+ * Compact statistic card used in the admin dashboard.
+ * Features a coloured corner gradient, an icon with coloured background,
+ * a numeric value and a descriptive label. Optionally navigates to a page when clicked.
  */
 
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
+/** Props for the StatCard component. */
 type StatCardProps = {
   label: string
   value: number | string
@@ -22,6 +20,10 @@ type StatCardProps = {
   path?: string
 }
 
+/**
+ * Renders a statistic card with an optional link to a detail page.
+ * Wraps content in a `<Link>` when `path` is provided; otherwise renders a plain `<div>`.
+ */
 export const StatCard: FC<StatCardProps> = ({
   label,
   value,

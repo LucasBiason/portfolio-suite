@@ -1,6 +1,13 @@
+/**
+ * @file useTheme.ts
+ * Custom hook that applies dynamic theme overrides from the admin settings
+ * by injecting a <style> element into the document head.
+ */
+
 import { useEffect, useState } from 'react'
 import { fetchPublicSettings } from '@/services/api'
 
+/** Shape of the theme configuration fetched from the public settings endpoint. */
 type ThemeSettings = {
   primaryColor: string
   primaryDarkColor: string
@@ -28,8 +35,10 @@ const defaults: ThemeSettings = {
 const STYLE_ID = 'portfolio-theme'
 
 /**
- * Aplica as cores configuradas no admin injetando CSS overrides.
- * Apenas para páginas públicas (não admin).
+ * Applies the colours and fonts configured in the admin panel by injecting
+ * a CSS overrides style block. Only runs on public pages (not admin routes).
+ *
+ * @returns Object with a loaded flag that is true once the theme has been applied.
  */
 export const useTheme = () => {
   const [loaded, setLoaded] = useState(false)

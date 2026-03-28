@@ -1,3 +1,9 @@
+/**
+ * @file AdminDomains.tsx
+ * Admin page for managing business domain entries used to tag career history.
+ * Provides a filterable, sortable list with a modal form for creating and editing domains.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
@@ -25,6 +31,7 @@ import { fetchAdminDomains, getAuthToken } from '@/services/api'
 // Types
 // ---------------------------------------------------------------------------
 
+/** Represents a business domain record returned by the admin API. */
 type Domain = {
   id: string
   name: string
@@ -34,6 +41,7 @@ type Domain = {
   order: number
 }
 
+/** Controlled form state for creating or editing a domain. */
 type DomainForm = {
   name: string
   slug: string
@@ -42,6 +50,7 @@ type DomainForm = {
   order: string
 }
 
+/** Sort direction for the domains table columns. */
 type SortDir = 'asc' | 'desc' | null
 
 // ---------------------------------------------------------------------------
@@ -54,6 +63,7 @@ const PAGE_SIZE = 10
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Resolves the API base URL for direct fetch calls in this module. */
 const getApiBase = () => {
   if (typeof window === 'undefined') return ''
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
@@ -61,11 +71,13 @@ const getApiBase = () => {
   return window.location.origin
 }
 
+/** Returns the authorisation headers required for admin API requests. */
 const authH = () => ({
   Authorization: `Bearer ${getAuthToken()}`,
   'Content-Type': 'application/json',
 })
 
+/** Returns a blank DomainForm initialised with sensible defaults. */
 const emptyForm = (): DomainForm => ({
   name: '',
   slug: '',
@@ -74,6 +86,7 @@ const emptyForm = (): DomainForm => ({
   order: '0',
 })
 
+/** Maps a Domain API object into the controlled form shape for editing. */
 const toForm = (d: Domain): DomainForm => ({
   name: d.name,
   slug: d.slug,
@@ -86,6 +99,7 @@ const toForm = (d: Domain): DomainForm => ({
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
@@ -96,6 +110,11 @@ function SortIcon({ dir }: { dir: SortDir }) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin business domains management page.
+ * Allows creating, editing and deleting domain entries used to tag career entries.
+ * Used at the /admin/domains route.
+ */
 export const AdminDomains: FC = () => {
   const [allDomains, setAllDomains] = useState<Domain[]>([])
   const [loading, setLoading] = useState(true)

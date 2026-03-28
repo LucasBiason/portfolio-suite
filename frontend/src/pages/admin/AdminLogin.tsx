@@ -1,3 +1,10 @@
+/**
+ * @file AdminLogin.tsx
+ * Admin authentication page. Renders a login form with email/password inputs
+ * and a decorative background of scattered tech icons. Stores the JWT token
+ * on success and redirects to /admin/dashboard.
+ */
+
 import { FC, FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -9,7 +16,7 @@ import {
 } from 'lucide-react'
 import { setAuthToken } from '@/services/api'
 
-// Scattered background icons - irregular positions, varied sizes, system colors
+/** Scattered background icon definitions with position, size and rotation. */
 const bgIcons = [
   // Top region
   { Icon: Code, x: 3, y: 2, size: 40, rotate: -15, color: '#0047AB', opacity: 0.18 },
@@ -65,6 +72,10 @@ const bgIcons = [
   { Icon: Globe, x: 55, y: 12, size: 20, rotate: -18, color: '#bf616a', opacity: 0.14 },
 ] as const
 
+/**
+ * Resolves the API base URL for the login request.
+ * Uses localhost in development and the current origin in production.
+ */
 const getApiBase = (): string => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return import.meta.env.VITE_API_URL || 'http://localhost:3001'
@@ -72,6 +83,10 @@ const getApiBase = (): string => {
   return window.location.origin
 }
 
+/**
+ * Renders the admin login page with email/password form and decorative background.
+ * Used at the /admin/login route.
+ */
 export const AdminLogin: FC = () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -100,7 +115,7 @@ export const AdminLogin: FC = () => {
 
       const data = await response.json()
       const token = data.token || data.accessToken
-      if (!token) throw new Error('Token nao recebido')
+      if (!token) throw new Error('Token not received')
 
       setAuthToken(token)
       navigate('/admin/dashboard')
@@ -113,12 +128,12 @@ export const AdminLogin: FC = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-4">
-      {/* Background effects */}
+      {/* Decorative background layer */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Gradient orbs */}
+        {/* Ambient gradient orbs */}
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-accent/8 blur-[100px]" />
-        {/* Scattered icons */}
+        {/* Scattered tech icons */}
         {bgIcons.map((item, i) => (
           <item.Icon
             key={i}
@@ -135,9 +150,9 @@ export const AdminLogin: FC = () => {
         ))}
       </div>
 
-      {/* Content */}
+      {/* Login card content */}
       <div className="relative z-10 w-full max-w-md">
-        {/* Logo / brand */}
+        {/* Logo and brand heading */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-lg shadow-primary/20">
             <Shield size={28} className="text-white" />
@@ -150,10 +165,10 @@ export const AdminLogin: FC = () => {
           </p>
         </div>
 
-        {/* Card */}
+        {/* Form card */}
         <div className="bg-surface/80 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl shadow-black/20">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
+            {/* Email field */}
             <div>
               <label htmlFor="email" className="block text-sm font-body font-medium text-grey-30 mb-2">
                 Email
@@ -173,7 +188,7 @@ export const AdminLogin: FC = () => {
               </div>
             </div>
 
-            {/* Password */}
+            {/* Password field */}
             <div>
               <label htmlFor="password" className="block text-sm font-body font-medium text-grey-30 mb-2">
                 Senha
@@ -201,7 +216,7 @@ export const AdminLogin: FC = () => {
               </div>
             </div>
 
-            {/* Error */}
+            {/* Inline error message */}
             {error && (
               <div className="flex items-start gap-2.5 text-sm font-body bg-red/10 border border-red/20 rounded-xl px-4 py-3">
                 <AlertCircle size={16} className="shrink-0 text-red mt-0.5" />
@@ -209,7 +224,7 @@ export const AdminLogin: FC = () => {
               </div>
             )}
 
-            {/* Submit */}
+            {/* Submit button */}
             <button
               type="submit"
               disabled={loading}
@@ -230,7 +245,7 @@ export const AdminLogin: FC = () => {
           </form>
         </div>
 
-        {/* Footer */}
+        {/* Page footer */}
         <p className="text-center text-grey-10 text-xs font-body mt-6">
           Portfolio Suite &middot; Painel Administrativo
         </p>

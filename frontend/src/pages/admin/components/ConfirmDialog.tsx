@@ -1,6 +1,13 @@
+/**
+ * @file ConfirmDialog.tsx
+ * Destructive-action confirmation dialog used before deleting records in the admin panel.
+ * Blocks interaction with the rest of the UI until the user confirms or cancels.
+ */
+
 import { FC } from 'react'
 import { AlertTriangle } from 'lucide-react'
 
+/** Props for the ConfirmDialog component. */
 type ConfirmDialogProps = {
   message: string
   onConfirm: () => void
@@ -8,6 +15,10 @@ type ConfirmDialogProps = {
   loading?: boolean
 }
 
+/**
+ * Renders a full-screen overlay confirmation dialog with a warning icon.
+ * The confirm button is disabled while `loading` is true to prevent double-submits.
+ */
 export const ConfirmDialog: FC<ConfirmDialogProps> = ({ message, onConfirm, onCancel, loading }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
     <div className="absolute inset-0 bg-black/70" onClick={onCancel} />

@@ -1,6 +1,12 @@
+/**
+ * @file useStats.ts
+ * Custom hook for fetching and managing aggregated public portfolio statistics.
+ */
+
 import { useEffect, useState, useCallback } from 'react'
 import { fetchPublicStats } from '@/services/api'
 
+/** Aggregated statistics shape returned by the public stats endpoint. */
 export type PortfolioStats = {
   career: {
     totalEntries: number
@@ -50,6 +56,11 @@ const emptyStats: PortfolioStats = {
   pageConfig: null,
 }
 
+/**
+ * Fetches and manages aggregated portfolio statistics.
+ *
+ * @returns Object with stats data and loading state.
+ */
 export const useStats = () => {
   const [stats, setStats] = useState<PortfolioStats>(emptyStats)
   const [loading, setLoading] = useState(true)

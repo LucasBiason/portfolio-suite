@@ -1,3 +1,10 @@
+/**
+ * @file AdminProjects.tsx
+ * Admin page for managing portfolio project entries.
+ * Supports server-side filtered/sorted listing with category and stack filter chips,
+ * plus a modal form for creating and editing projects including image management.
+ */
+
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
@@ -36,10 +43,13 @@ import { FormField } from './components/FormField'
 // Types
 // ---------------------------------------------------------------------------
 
+/** A single image entry attached to a project. */
 type ImageEntry = { url: string; alt: string }
 
+/** Sort direction for the projects table columns. */
 type SortDir = 'asc' | 'desc' | null
 
+/** Controlled form state for creating or editing a project entry. */
 type ProjectForm = {
   title: string
   description: string
@@ -80,6 +90,7 @@ const PAGE_SIZE = 10
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Returns a blank ProjectForm initialised with sensible defaults. */
 const emptyForm = (): ProjectForm => ({
   title: '',
   description: '',
@@ -96,6 +107,7 @@ const emptyForm = (): ProjectForm => ({
   stackIds: [],
 })
 
+/** Maps a Project API object into the controlled form shape for editing. */
 const projectToForm = (p: Project & { order?: number; categoryIds?: string[]; stackIds?: string[] }): ProjectForm => ({
   title: p.title,
   description: p.description,
@@ -116,12 +128,14 @@ const projectToForm = (p: Project & { order?: number; categoryIds?: string[]; st
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Renders the sort direction indicator icon for a table column header. */
 function SortIcon({ dir }: { dir: SortDir }) {
   if (dir === 'asc') return <ChevronUp size={14} className="text-accent" />
   if (dir === 'desc') return <ChevronDown size={14} className="text-accent" />
   return <ChevronsUpDown size={14} className="text-grey-20 opacity-50" />
 }
 
+/** Props for the Chip filter button. */
 type ChipProps = {
   label: string
   color?: string
@@ -129,6 +143,7 @@ type ChipProps = {
   onClick: () => void
 }
 
+/** Renders a toggle chip button used in the category and stack filter bars. */
 function Chip({ label, color, active, onClick }: ChipProps) {
   return (
     <button
@@ -157,6 +172,12 @@ function Chip({ label, color, active, onClick }: ChipProps) {
 // Main component
 // ---------------------------------------------------------------------------
 
+/**
+ * Renders the admin projects management page.
+ * Loads projects from the API with server-side filtering, sorting and pagination.
+ * Provides a modal form for creating and editing project entries including image management.
+ * Used at the /admin/projects route.
+ */
 export const AdminProjects: FC = () => {
   // Server data
   const [projects, setProjects] = useState<(Project & { order?: number })[]>([])

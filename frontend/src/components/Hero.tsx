@@ -1,3 +1,10 @@
+/**
+ * @file Hero.tsx
+ * Full-viewport hero section of the landing page.
+ * Displays the portfolio owner's avatar, name, subtitle and primary CTA links.
+ * Also updates the document title and meta description dynamically from SEO settings.
+ */
+
 import { useEffect, useMemo, memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useUser } from '@/hooks/useUser'
@@ -7,6 +14,11 @@ import { getAssetUrl } from '@/utils/assetUrl'
 const DEFAULT_SEO_TITLE = 'Portfolio API'
 const DEFAULT_SEO_DESCRIPTION = 'Portfólio dinâmico abastecido por um backend que controla todo o conteúdo.'
 
+/**
+ * Updates the <meta name="description"> tag content.
+ *
+ * @param description - The new meta description text.
+ */
 const updateMetaDescription = (description: string) => {
   const meta = document.querySelector('meta[name="description"]')
   if (meta) {
@@ -14,6 +26,10 @@ const updateMetaDescription = (description: string) => {
   }
 }
 
+/**
+ * Renders the hero section with the owner's avatar, social links and CTA buttons.
+ * Used on the landing page (App.tsx).
+ */
 export const Hero = memo(() => {
   const { user, loading } = useUser()
 
@@ -65,7 +81,7 @@ export const Hero = memo(() => {
               }}
             />
           </div>
-          {/* Social links below avatar */}
+          {/* Social links displayed below the avatar */}
           <div className="flex items-center gap-4 text-white">
             {user.socialLinks.map((item) => (
               <a

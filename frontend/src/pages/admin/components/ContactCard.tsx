@@ -1,12 +1,12 @@
 /**
- * COMPONENTE: ContactCard
- *
- * Card de canal de contato configurado.
- * Exibe icone, titulo e valor com estilo consistente.
+ * @file ContactCard.tsx
+ * Display card for a configured contact channel in the admin profile section.
+ * Shows a Boxicons icon, a channel title and its value, optionally rendered as a link.
  */
 
 import { FC } from 'react'
 
+/** Props for the ContactCard component. */
 type ContactCardProps = {
   icon: string
   title: string
@@ -14,6 +14,10 @@ type ContactCardProps = {
   href?: string | null
 }
 
+/**
+ * Renders a contact channel card with icon, label and value.
+ * When `href` is provided the value is rendered as an anchor tag; external URLs open in a new tab.
+ */
 export const ContactCard: FC<ContactCardProps> = ({ icon, title, value, href }) => (
   <div className="flex items-center gap-3 p-4 rounded-xl bg-surface border border-white/5">
     <div className="p-2.5 rounded-lg bg-primary/20 flex-shrink-0">

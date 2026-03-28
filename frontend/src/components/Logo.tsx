@@ -1,18 +1,22 @@
 /**
- * COMPONENTE: Logo
- *
- * Logo SVG customizado do Portfolio Suite.
- * Icone de portfolio/documento estilizado com acento em primary.
- * Reutilizavel em header publico e admin.
+ * @file Logo.tsx
+ * Custom SVG logo for the Portfolio Suite.
+ * Renders a stylised document/portfolio icon with a primary-colour background
+ * and a blue accent dot. Used in both the public header and the admin sidebar.
  */
 
 import { memo } from 'react'
 
+/** Props for the Logo SVG component. */
 type LogoProps = {
   size?: number
   className?: string
 }
 
+/**
+ * Renders the Portfolio Suite SVG logo at the specified size.
+ * Used in the public Header and the AdminLayout sidebar.
+ */
 export const Logo = memo(({ size = 32, className = '' }: LogoProps) => (
   <svg
     width={size}

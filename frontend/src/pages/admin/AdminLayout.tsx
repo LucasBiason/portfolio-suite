@@ -1,3 +1,9 @@
+/**
+ * @file AdminLayout.tsx
+ * Persistent admin shell with a collapsible sidebar, navigation links and a mobile top bar.
+ * Wraps all admin pages via React Router's Outlet mechanism.
+ */
+
 import { FC, useState } from 'react'
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom'
 import {
@@ -20,12 +26,14 @@ import {
 import { clearAuthToken } from '@/services/api'
 import { Logo } from '@/components/Logo'
 
+/** Describes a single entry in the admin sidebar navigation list. */
 type NavItem = {
   label: string
   path: string
   icon: FC<{ size?: number }>
 }
 
+/** Complete list of navigation items displayed in the admin sidebar. */
 const navItems: NavItem[] = [
   { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Perfil', path: '/admin/profile', icon: User },
@@ -40,15 +48,22 @@ const navItems: NavItem[] = [
   { label: 'Configurações', path: '/admin/settings', icon: Settings },
 ]
 
+/**
+ * Renders the persistent admin shell with sidebar navigation and mobile top bar.
+ * All admin pages are rendered inside the `<Outlet />` within the main content area.
+ * Used as the layout wrapper for all routes under /admin.
+ */
 export const AdminLayout: FC = () => {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  /** Clears the stored auth token and redirects to the login page. */
   const handleLogout = () => {
     clearAuthToken()
     navigate('/admin/login')
   }
 
+  /** Returns the CSS class string for a NavLink based on its active state. */
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     [
       'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-body font-medium transition-colors',
@@ -57,6 +72,7 @@ export const AdminLayout: FC = () => {
         : 'text-grey-30 hover:bg-white/5 hover:text-white',
     ].join(' ')
 
+  /** Renders the shared sidebar content used in both desktop and mobile drawers. */
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo / Branding */}

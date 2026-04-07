@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0] - 2026-04-07
+
+### Added
+- **Hero background watermark**: imagem de fundo como marca d'água no hero (opacidade 20%, mix-blend-lighten)
+- **Upload de fundo do hero** no painel admin (tag=hero), mesmo padrão do avatar
+- **Projeto CNAB Parser** adicionado ao portfolio com 6 screenshots e demo link
+
+### Fixed
+- **trust proxy** no Express para compatibilidade com rate limiter atrás de Nginx
+- **CORS** configurado com domínio correto (http + https)
+- **ASSET_BASE_URL** corrigido para HTTP (porta 443 bloqueada no Hostinger)
+- **avatarUrl/heroBackgroundUrl** aceitam paths relativos no schema Zod
+- **uploadAsset** aceita parâmetro tag para diferenciar avatar e hero
+
+
 ## [2.0.0] - 2026-03-26
 
 ### Added

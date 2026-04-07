@@ -59,10 +59,15 @@ export const Hero = memo(() => {
   return (
     <section
       id="inicio"
-      className="relative bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url('${user.heroBackgroundUrl}')` }}
+      className="relative overflow-hidden"
     >
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-hero-gradient-from to-hero-gradient-to" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-hero-gradient-from to-hero-gradient-to" />
+      {user.heroBackgroundUrl && (
+        <div
+          className="absolute inset-0 z-10 bg-cover bg-center bg-no-repeat opacity-20 mix-blend-lighten"
+          style={{ backgroundImage: `url('${user.heroBackgroundUrl}')` }}
+        />
+      )}
       <div className="container relative z-20 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 py-16 sm:flex-row sm:py-20">
         <div className="flex-shrink-0 flex flex-col items-center gap-4">
           <div className="rounded-full border-4 border-accent-soft shadow-2xl bg-background/20 overflow-hidden">

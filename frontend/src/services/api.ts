@@ -683,12 +683,12 @@ export const updateSettings = async (payload: unknown): Promise<unknown> => {
  * @param file - The File object to upload.
  * @returns Object with the resulting asset URL.
  */
-export const uploadAsset = async (file: File): Promise<{ url: string }> => {
+export const uploadAsset = async (file: File, tag = 'avatar'): Promise<{ url: string }> => {
   const apiBase = getApiBase()
   const token = getAuthToken()
   const formData = new FormData()
   formData.append('file', file)
-  const response = await fetch(`${apiBase}/api/assets/upload`, {
+  const response = await fetch(`${apiBase}/api/assets/upload?tag=${tag}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,

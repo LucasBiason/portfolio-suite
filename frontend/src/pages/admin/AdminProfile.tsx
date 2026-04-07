@@ -5,7 +5,7 @@
  */
 
 import { FC, FormEvent, useEffect, useState, useRef } from 'react'
-import { User, CheckCircle, Upload, Camera } from 'lucide-react'
+import { User, CheckCircle, Upload, Camera, ImageIcon } from 'lucide-react'
 import { fetchAdminProfile, updateProfile, uploadAsset } from '@/services/api'
 import { getAssetUrl } from '@/utils/assetUrl'
 import { PageHeader } from './components/PageHeader'
@@ -19,6 +19,7 @@ type ProfileData = {
   bio?: string
   highlights?: string[]
   avatarUrl?: string
+  heroBackgroundUrl?: string
   seo?: { title?: string; description?: string }
   footer?: { title?: string; description?: string; tagline?: string }
 }
@@ -32,6 +33,7 @@ type ProfileForm = {
   bio: string
   highlights: string
   avatarUrl: string
+  heroBackgroundUrl: string
   seoTitle: string
   seoDescription: string
   contactTitle: string
@@ -51,6 +53,7 @@ const emptyForm = (): ProfileForm => ({
   bio: '',
   highlights: '',
   avatarUrl: '',
+  heroBackgroundUrl: '',
   seoTitle: '',
   seoDescription: '',
   contactTitle: '',
@@ -75,6 +78,8 @@ export const AdminProfile: FC = () => {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const heroFileRef = useRef<HTMLInputElement>(null)
+  const [uploadingHero, setUploadingHero] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -90,6 +95,7 @@ export const AdminProfile: FC = () => {
           bio: data.bio ?? '',
           highlights: (data.highlights ?? []).join('\n'),
           avatarUrl: data.avatarUrl ?? '',
+          heroBackgroundUrl: data.heroBackgroundUrl ?? '',
           seoTitle: data.seo?.title ?? '',
           seoDescription: data.seo?.description ?? '',
           contactTitle: data.contact?.title ?? '',
@@ -125,6 +131,20 @@ export const AdminProfile: FC = () => {
     }
   }
 
+  const handleUploadHero = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingHero(true)
+    try {
+      const result = await uploadAsset(file, 'hero')
+      setForm((prev) => ({ ...prev, heroBackgroundUrl: result.url }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao enviar imagem de fundo')
+    } finally {
+      setUploadingHero(false)
+    }
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -139,6 +159,7 @@ export const AdminProfile: FC = () => {
       bio: form.bio,
       highlights: form.highlights.split('\n').map((s) => s.trim()).filter(Boolean),
       avatarUrl: form.avatarUrl || undefined,
+      heroBackgroundUrl: form.heroBackgroundUrl || undefined,
       seo: {
         title: form.seoTitle || undefined,
         description: form.seoDescription || undefined,
@@ -224,6 +245,50 @@ export const AdminProfile: FC = () => {
                 <p className="text-sm font-body font-medium text-white">Foto do Perfil</p>
                 <p className="text-xs font-body text-grey-20 mt-1">
                   Clique no ícone da câmera para enviar uma nova foto. Formatos: JPG, PNG, WebP.
+                </p>
+              </div>
+            </div>
+
+            {/* Hero background upload */}
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="h-24 w-40 rounded-lg overflow-hidden bg-background border-2 border-white/10">
+                  {form.heroBackgroundUrl ? (
+                    <img
+                      src={form.heroBackgroundUrl.startsWith('http') ? form.heroBackgroundUrl : getAssetUrl(form.heroBackgroundUrl)}
+                      alt="Hero Background"
+                      className="h-full w-full object-cover opacity-60"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <ImageIcon size={32} className="text-grey-10" />
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => heroFileRef.current?.click()}
+                  disabled={uploadingHero}
+                  className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                >
+                  {uploadingHero ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent" />
+                  ) : (
+                    <Upload size={14} />
+                  )}
+                </button>
+                <input
+                  ref={heroFileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadHero}
+                  className="hidden"
+                />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-body font-medium text-white">Fundo do Hero</p>
+                <p className="text-xs font-body text-grey-20 mt-1">
+                  Imagem de fundo da seção principal (marca d'água). Recomendado: paisagem escura, 1920x1080+.
                 </p>
               </div>
             </div>

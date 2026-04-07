@@ -15,6 +15,9 @@ import { mediaRoot } from './utils/assets';
 const start = async (): Promise<void> => {
   const app: Express = express();
 
+  // Trust proxy (Nginx reverse proxy)
+  app.set('trust proxy', 1);
+
   // Security and parsing middleware
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cors(createCorsOptions()));

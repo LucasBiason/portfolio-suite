@@ -119,34 +119,38 @@ erDiagram
 
 ## Stack
 
-| Camada | Tecnologias |
-|--------|-------------|
-| **Backend** | Node.js 18, Express, Prisma ORM, PostgreSQL 16, JWT, Zod, Multer |
-| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Lucide React |
-| **Infra** | Docker Compose, nginx, VPS Hostinger |
+| Camada       | Tecnologias                                                      |
+| ------------ | ---------------------------------------------------------------- |
+| **Backend**  | Node.js 18, Express, Prisma ORM, PostgreSQL 16, JWT, Zod, Multer |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Lucide React           |
+| **Infra**    | Docker Compose, nginx, VPS Hostinger                             |
 
 ---
 
 ## Instalacao
 
 ### Pre-requisitos
+
 - Docker e Docker Compose
 - Node.js 18+ (para desenvolvimento)
 
 ### Configuracao
 
 1. Clone o repositorio:
+
 ```bash
 git clone https://github.com/LucasBiason/portfolio-suite.git
 cd portfolio-suite
 ```
 
 2. Crie o arquivo de variaveis de ambiente:
+
 ```bash
 cp configs/portfolio.env.example configs/.env
 ```
 
 3. Edite `configs/.env` com suas credenciais:
+
 ```env
 ADMIN_USERNAME=seu_usuario
 ADMIN_PASSWORD=sua_senha_segura
@@ -154,6 +158,8 @@ JWT_SECRET=seu_segredo_jwt_seguro
 PORTFOLIO_DEFAULT_EMAIL=seu@email.com
 PORTFOLIO_DEFAULT_PASSWORD=sua_senha
 DATABASE_URL=postgresql://portfolio:portfolio@database:5432/portfolio
+# SMTP: veja configs/portfolio.env.example. Em docker compose local o backend usa Ethereal se não houver credenciais.
+# Produção (VPS): defina SMTP_USER, SMTP_PASS e CONTACT_EMAIL em configs/.env.prod.
 ```
 
 ### Desenvolvimento
@@ -162,11 +168,11 @@ DATABASE_URL=postgresql://portfolio:portfolio@database:5432/portfolio
 docker compose up -d
 ```
 
-| Servico | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
+| Servico     | URL                   |
+| ----------- | --------------------- |
+| Frontend    | http://localhost:5173 |
 | Backend API | http://localhost:3001 |
-| Database | localhost:5434 |
+| Database    | localhost:5434        |
 
 ### Producao
 

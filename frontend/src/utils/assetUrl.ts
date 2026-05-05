@@ -11,28 +11,36 @@
  * @returns The fully-qualified URL string.
  */
 export const getAssetUrl = (path: string): string => {
-  if (typeof window === 'undefined') {
-    return path
+  if (typeof window === "undefined") {
+    return path;
   }
 
   // Already an absolute URL — return as-is
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  // Protocol-relative (//cdn.example/...) — fixa o protocolo atual (evita falhas em alguns mobile)
+  if (path.startsWith("//")) {
+    return `${window.location.protocol}${path}`;
   }
 
   // Relative path starting with "/" — prepend current origin
-  if (path.startsWith('/')) {
-    return window.location.origin + path
+  if (path.startsWith("/")) {
+    return window.location.origin + path;
   }
 
   // Development fallback
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return `http://localhost:3001${path.startsWith('/') ? path : '/' + path}`
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
+    return `http://localhost:3001${path.startsWith("/") ? path : "/" + path}`;
   }
 
   // Production: use current origin
-  return window.location.origin + (path.startsWith('/') ? path : '/' + path)
-}
+  return window.location.origin + (path.startsWith("/") ? path : "/" + path);
+};
 
 /**
  * Normalises a single URL or array of image URLs to absolute URL strings.
@@ -40,10 +48,11 @@ export const getAssetUrl = (path: string): string => {
  * @param imageUrl - A single URL string, array of URL strings, null or undefined.
  * @returns An array of normalised absolute URL strings.
  */
-export const normalizeImageUrls = (imageUrl: string | string[] | null | undefined): string[] => {
-  if (!imageUrl) return []
-  
-  const images = Array.isArray(imageUrl) ? imageUrl : [imageUrl]
-  return images.map(img => getAssetUrl(img))
-}
+export const normalizeImageUrls = (
+  imageUrl: string | string[] | null | undefined,
+): string[] => {
+  if (!imageUrl) return [];
 
+  const images = Array.isArray(imageUrl) ? imageUrl : [imageUrl];
+  return images.map((img) => getAssetUrl(img));
+};

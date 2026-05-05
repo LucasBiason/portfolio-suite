@@ -14,6 +14,8 @@ services:
       - DATABASE_URL=postgresql://portfolio:portfolio@database:5432/portfolio?schema=public
       - PORT=3001
       - NODE_ENV=production
+      # Sem SMTP no .env? true usa Ethereal (logs do backend mostram URL de pré-visualização).
+      - SMTP_USE_ETHEREAL=true
       - MEDIA_PATH=/media
     volumes:
       - ./media:/media

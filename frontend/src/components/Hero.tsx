@@ -79,22 +79,23 @@ export const Hero = memo(() => {
             Wrapper com tamanho fixo: em mobile (flex-col + preflight em img) o círculo
             podia colapsar e a foto parecia um ponto.
           */}
-          <div className="flex h-52 w-52 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-accent-soft bg-background/20 shadow-2xl xs:h-56 xs:w-56 sm:h-64 sm:w-64">
+          <div className="relative h-52 w-52 shrink-0 overflow-hidden rounded-full border-4 border-accent-soft bg-surface shadow-2xl xs:h-56 xs:w-56 sm:h-64 sm:w-64">
             <img
               src={getAssetUrl(user.avatarUrl || "/assets/img/avatar.jpg")}
               alt={user.name}
               width={256}
               height={256}
-              className="h-full w-full max-w-none object-cover"
+              sizes="(max-width: 640px) 208px, 256px"
+              className="block h-full w-full max-w-none object-cover object-center"
               decoding="async"
+              fetchPriority="high"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 if (!target.dataset.fallbackSet) {
                   target.dataset.fallbackSet = "true";
                   target.src = getAssetUrl("/assets/img/avatar.jpg");
-                } else {
-                  target.style.display = "none";
                 }
+                // Não usar display:none (círculo ficava vazio no mobile); mantém área com bg-surface.
               }}
             />
           </div>

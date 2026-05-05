@@ -15,8 +15,17 @@ export const getAssetUrl = (path: string): string => {
     return path;
   }
 
-  // Already an absolute URL — return as-is
+  // Absolute URL: em páginas HTTPS, evitar conteúdo misto (Safari iOS bloqueia http://)
   if (path.startsWith("http://") || path.startsWith("https://")) {
+    if (path.startsWith("http://") && window.location.protocol === "https:") {
+      try {
+        const u = new URL(path);
+        u.protocol = "https:";
+        return u.toString();
+      } catch {
+        return path.replace(/^http:\/\//i, "https://");
+      }
+    }
     return path;
   }
 

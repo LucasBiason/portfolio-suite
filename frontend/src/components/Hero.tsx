@@ -15,6 +15,13 @@ const DEFAULT_SEO_TITLE = "Portfolio API";
 const DEFAULT_SEO_DESCRIPTION =
   "Portfólio dinâmico abastecido por um backend que controla todo o conteúdo.";
 
+// Fallback servido pelo bundle do frontend (frontend/public/avatar-fallback.jpg).
+// Vive dentro da imagem Docker do portfolio-frontend, então não depende do volume
+// ./media (bind mount) nem do upload do usuário em /uploads. Não trocar este caminho
+// por algo em /assets/img/* — caminhos /assets/img/* dependem do volume de mídia,
+// que pode ser limpo entre redeploys.
+const AVATAR_FALLBACK_URL = "/avatar-fallback.jpg";
+
 /**
  * Updates the <meta name="description"> tag content.
  *
@@ -81,7 +88,7 @@ export const Hero = memo(() => {
           */}
           <div className="relative h-52 w-52 shrink-0 overflow-hidden rounded-full border-4 border-accent-soft bg-surface shadow-2xl xs:h-56 xs:w-56 sm:h-64 sm:w-64">
             <img
-              src={getAssetUrl(user.avatarUrl || "/assets/img/avatar.jpg")}
+              src={getAssetUrl(user.avatarUrl || AVATAR_FALLBACK_URL)}
               alt={user.name}
               width={256}
               height={256}
@@ -93,7 +100,7 @@ export const Hero = memo(() => {
                 const target = e.target as HTMLImageElement;
                 if (!target.dataset.fallbackSet) {
                   target.dataset.fallbackSet = "true";
-                  target.src = getAssetUrl("/assets/img/avatar.jpg");
+                  target.src = getAssetUrl(AVATAR_FALLBACK_URL);
                 }
                 // Não usar display:none (círculo ficava vazio no mobile); mantém área com bg-surface.
               }}

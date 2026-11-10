@@ -1,4 +1,20 @@
-# Portfolio Suite
+<div align="center">
+
+  <img src="./branding/og-image.svg" alt="Portfolio Suite Hero Banner" width="100%" />
+
+  <br /><br />
+
+  <img src="./branding/logo-horizontal.svg" alt="Portfolio Suite Logo" width="460px" />
+
+  <p align="center">
+    <strong>Full-Stack Engineering Showcase &amp; Dynamic Headless CMS</strong>
+  </p>
+
+  <p align="center">
+    Portfólio profissional completo e painel administrativo modular de <strong>Lucas Biason</strong>, desenvolvido com React 19, TypeScript 5, Express, Prisma ORM, PostgreSQL e Nginx em Docker Compose na VPS Hostinger.
+  </p>
+
+</div>
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Node.js](https://img.shields.io/badge/Node.js-18-339933?logo=nodedotjs&logoColor=white)

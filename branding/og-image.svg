@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="100%">
+  <defs>
+    <radialGradient id="ps-bg" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#182238" />
+      <stop offset="60%" stop-color="#0B0F19" />
+      <stop offset="100%" stop-color="#05080E" />
+    </radialGradient>
+    <linearGradient id="ps-indigo-banner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="ps-cyan-banner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <pattern id="ps-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E293B" stroke-width="0.8" opacity="0.6" />
+    </pattern>
+    <filter id="ps-big-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#ps-bg)" />
+  <rect width="1200" height="630" fill="url(#ps-grid)" />
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="600" cy="200" r="260" fill="#6366F1" opacity="0.14" filter="url(#ps-big-glow)" />
+  <circle cx="760" cy="340" r="220" fill="#00F0FF" opacity="0.10" filter="url(#ps-big-glow)" />
+
+  <!-- Central Symbol Scale 1.6 -->
+  <g transform="translate(600, 190) scale(1.6)">
+    <g transform="translate(-50, -50)">
+      <polygon points="50,6 90,28 90,72 50,94 10,72 10,28" fill="#0B0F19" stroke="#1E293B" stroke-width="2.5" />
+      <path d="M26,38 L50,24 L74,38 L50,52 Z" fill="#1E293B" stroke="url(#ps-indigo-banner)" stroke-width="2" opacity="0.7" />
+      <path d="M26,50 L50,36 L74,50 L50,64 Z" fill="#141C2E" stroke="url(#ps-cyan-banner)" stroke-width="2.5" filter="url(#ps-big-glow)" />
+      <path d="M26,62 L50,48 L74,62 L50,76 Z" fill="#0F172A" stroke="#10B981" stroke-width="2" />
+      <polygon points="50,42 56,48 50,54 44,48" fill="#00F0FF" filter="url(#ps-big-glow)" />
+      <circle cx="50" cy="24" r="3" fill="#818CF8" />
+      <circle cx="74" cy="50" r="3" fill="#00F0FF" />
+      <circle cx="26" cy="50" r="3" fill="#6366F1" />
+      <circle cx="50" cy="76" r="3" fill="#10B981" />
+    </g>
+  </g>
+
+  <!-- Typography -->
+  <text x="600" y="375" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="54" font-weight="900" fill="#F8FAFC" text-anchor="middle" letter-spacing="-1">
+    Portfolio<tspan fill="#6366F1">Suite</tspan>
+  </text>
+  
+  <text x="600" y="420" font-family="'Inter', sans-serif" font-size="20" font-weight="500" fill="#CBD5E1" text-anchor="middle" letter-spacing="0.5">
+    Full-Stack Engineering Showcase &amp; Dynamic Headless CMS
+  </text>
+
+  <!-- Badges -->
+  <g transform="translate(600, 480)">
+    <rect x="-310" y="0" width="140" height="34" rx="17" fill="#141C2E" stroke="#6366F1" stroke-width="1.2" />
+    <text x="-240" y="22" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#818CF8" text-anchor="middle">React 19 Vite</text>
+
+    <rect x="-150" y="0" width="140" height="34" rx="17" fill="#141C2E" stroke="#00F0FF" stroke-width="1.2" />
+    <text x="-80" y="22" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#00F0FF" text-anchor="middle">Express + TS</text>
+
+    <rect x="10" y="0" width="140" height="34" rx="17" fill="#141C2E" stroke="#10B981" stroke-width="1.2" />
+    <text x="80" y="22" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#10B981" text-anchor="middle">Prisma + PG</text>
+
+    <rect x="170" y="0" width="140" height="34" rx="17" fill="#141C2E" stroke="#F59E0B" stroke-width="1.2" />
+    <text x="240" y="22" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#FBBF24" text-anchor="middle">Docker Deploy</text>
+  </g>
+  
+  <text x="600" y="580" font-family="'JetBrains Mono', monospace" font-size="12" fill="#64748B" text-anchor="middle" letter-spacing="1.5">
+    PORTFÓLIO OFICIAL LUCAS BIASON • PRODUÇÃO EM VPS HOSTINGER
+  </text>
+</svg>
